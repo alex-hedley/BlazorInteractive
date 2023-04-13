@@ -1,5 +1,20 @@
-<h3>EditorComponent</h3>
+<div>
+    <h3>EditorComponent</h3>
+
+    <StandaloneCodeEditor 
+        Id="editor" 
+        ConstructionOptions="EditorConstructionOptions" 
+        CssClass="editor" />
+</div>
 
 @code {
-    
+    private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
+    {
+        return new StandaloneEditorConstructionOptions
+        {
+            AutomaticLayout = true,
+            Language = "csharp",
+            Value = "Console.WriteLine(\"Hello, World!\");"
+        };
+    }
 }
