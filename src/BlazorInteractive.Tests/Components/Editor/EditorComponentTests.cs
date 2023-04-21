@@ -2,9 +2,9 @@ using AngleSharp.Dom;
 using Bunit;
 using FluentAssertions;
 
-using BlazorInteractive.Components;
+using BlazorInteractive.Components.Editor;
 
-namespace BlazorInteractive.Tests.Components;
+namespace BlazorInteractive.Tests.Components.Editor;
 
 public class EditorComponentTests : TestContext
 {
@@ -14,7 +14,7 @@ public class EditorComponentTests : TestContext
     }
 
     [Fact]
-    public void Test1()
+    public void GetContentFromEditor()
     {
         JSInterop.Setup<String>("blazorMonaco.editor.getValue", _ => true);
 

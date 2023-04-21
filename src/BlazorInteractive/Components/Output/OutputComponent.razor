@@ -1,0 +1,14 @@
+<div id="Output">
+    @Content
+</div>
+
+@code {
+
+    [Parameter]
+    public string Content { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Content = string.Empty;
+    }
+}
