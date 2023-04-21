@@ -2,10 +2,15 @@
     <StandaloneCodeEditor 
         Id="editor" 
         ConstructionOptions="EditorConstructionOptions" 
-        CssClass="editor" />
+        CssClass="editor"
+        @ref="_editor" />
+    <button @onclick="Compile">Compile</button>
 </div>
 
 @code {
+
+    private StandaloneCodeEditor _editor = null!;
+
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
         return new StandaloneEditorConstructionOptions
@@ -14,5 +19,10 @@
             Language = "csharp",
             Value = "Console.WriteLine(\"Hello, World!\");"
         };
+    }
+
+    private async Task Compile()
+    {
+        string value = await _editor.GetValue();
     }
 }
