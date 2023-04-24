@@ -1,4 +1,9 @@
-/* /Components/EditorComponent.razor.rz.scp.css */
-[b-1sy9s8qvtz] #editor {
+/* /Components/Editor/EditorComponent.razor.rz.scp.css */
+[b-6dijnfhog3] #editor {
 	height: 1000px;
+}
+/* /Components/Output/OutputComponent.razor.rz.scp.css */
+div[b-thtwn92nhp] {
+    background: black;
+    color: green;
 }
