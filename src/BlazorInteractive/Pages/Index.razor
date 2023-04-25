@@ -1,6 +1,29 @@
 ﻿@using BlazorInteractive.Components.Editor
+@using BlazorInteractive.Components.Output
 @page "/"
 
 <PageTitle>Index</PageTitle>
 
-<EditorComponent></EditorComponent>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <EditorComponent OnCompile="OnCompile"></EditorComponent>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col">
+            <OutputComponent @ref="_output"></OutputComponent>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private OutputComponent _output;
+    
+    private void OnCompile(string editorText)
+    {
+        _output.SetContent(editorText);
+    }
+
+}

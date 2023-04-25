@@ -7,8 +7,10 @@
     [Parameter]
     public string Content { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    public void SetContent(string content)
     {
-        Content = string.Empty;
+        Content = content;
+        StateHasChanged();
     }
+
 }

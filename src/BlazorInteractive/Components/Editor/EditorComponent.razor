@@ -17,7 +17,7 @@
                 Id="editor"
                 ConstructionOptions="EditorConstructionOptions"
                 CssClass="editor"
-                @ref="_editor"/>
+                @ref="_editor" />
         </div>
     </div>
     <div class="row">
@@ -29,6 +29,9 @@
 
 @code {
 
+    [Parameter]
+    public EventCallback<string> OnCompile { get; set; }
+    
     private StandaloneCodeEditor _editor = null!;
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
@@ -44,6 +47,7 @@
     private async Task Compile()
     {
         string value = await _editor.GetValue();
+        await OnCompile.InvokeAsync(value);
     }
 
     private async Task ChangeTheme(ChangeEventArgs e)
