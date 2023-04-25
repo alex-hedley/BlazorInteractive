@@ -1,4 +1,13 @@
 <div>
+    <div style="margin:10px 0;">
+        Theme:
+        <select id="theme" @onchange="ChangeTheme">
+            <option value="vs">Visual Studio</option>
+            <option value="vs-dark">Visual Studio Dark</option>
+            <option value="hc-black">High Contrast Black</option>
+        </select>
+    </div>
+    
     <StandaloneCodeEditor 
         Id="editor" 
         ConstructionOptions="EditorConstructionOptions" 
@@ -24,5 +33,11 @@
     private async Task Compile()
     {
         string value = await _editor.GetValue();
+    }
+
+    private async Task ChangeTheme(ChangeEventArgs e)
+    {
+        Console.WriteLine($"setting theme to: {e.Value?.ToString()}");
+        await Global.SetTheme(e.Value?.ToString());
     }
 }
