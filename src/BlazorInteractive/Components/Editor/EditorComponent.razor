@@ -1,3 +1,5 @@
+@* @inject CompilerService cs *@
+
 <div class="container">
     <div class="row">
         <div class="col">
@@ -31,7 +33,7 @@
 
     [Parameter]
     public EventCallback<string> OnCompile { get; set; }
-    
+
     private StandaloneCodeEditor _editor = null!;
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
@@ -47,6 +49,7 @@
     private async Task Compile()
     {
         string value = await _editor.GetValue();
+        //await cs.Run(value);
         await OnCompile.InvokeAsync(value);
     }
 
