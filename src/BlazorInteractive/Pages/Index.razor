@@ -12,18 +12,16 @@
     </div>
     <div class="row mt-2">
         <div class="col">
-            <OutputComponent @ref="_output"></OutputComponent>
+            <OutputComponent Content="@output"></OutputComponent>
         </div>
     </div>
 </div>
 
 @code {
-
-    private OutputComponent _output;
+    private string output = string.Empty;
     
     private void OnCompile(string editorText)
     {
-        _output.SetContent(editorText);
+        output = editorText;
     }
-
 }

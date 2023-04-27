@@ -26,9 +26,7 @@ public class OutputComponentTests : UnitTestBase
     public void SetContent()
     {
         const string expectedContent = _helloWorld;
-        IRenderedComponent<OutputComponent> cut = RenderComponent<OutputComponent>();
-        
-        InvokeAsync(() => cut.Instance.SetContent(expectedContent));
+        IRenderedComponent<OutputComponent> cut = RenderComponent<OutputComponent>(parameters => parameters.Add(p => p.Content, expectedContent));
 
         IElement element = cut.Find(_outputDivId);
         element.Should().NotBeNull();
