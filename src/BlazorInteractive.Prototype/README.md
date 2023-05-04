@@ -9,3 +9,6 @@ Examples of
 - https://github.com/egametang/ET/blob/master/Share/Tool/ExcelExporter/ExcelExporter.cs
 
 `MetadataReferences.Add(MetadataReference.CreateFromFile(Assembly.Load("System.Runtime").Location));`
+
+- https://www.albahari.com/nutshell/E8-CH27.aspx
+- [Getting Started with Roslyn C# Scripting API](https://itnext.io/getting-start-with-roslyn-c-scripting-api-d2ea10338d2b) Ali Bahraminezhad Mar 3, 2020
