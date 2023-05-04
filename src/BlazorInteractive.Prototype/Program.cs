@@ -15,4 +15,13 @@ var sc = new ScriptCompiler();
 var scriptOutput = sc.Compile(sourceCode, imports);
 Console.WriteLine(scriptOutput);
 
+sourceCode = @"class Program 
+{
+    static void Main() => System.Console.WriteLine(""Hello"");
+}";
+
+var cc = new CodeCompiler();
+var codeOutput = cc.Compile(sourceCode, imports);
+Console.WriteLine(scriptOutput);
+
 Console.ReadLine();

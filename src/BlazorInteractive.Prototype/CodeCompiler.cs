@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Scripting.Hosting;
 
 public class CodeCompiler : ICompiler
 {
-    public async Task<string> Compile(string sourceCod, IEnumerable<string> imports)
+    public async Task<string> Compile(string sourceCode, IEnumerable<string> imports)
     {
         // See https://aka.ms/new-console-template for more information
         //Console.WriteLine("Hello, World!");
@@ -13,7 +13,7 @@ public class CodeCompiler : ICompiler
         // cmd /c c:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe /reference:/out:TEST.exe /win32icon:favicon.ico TEST.cs | %no_obs% | %no_pol% | %no_prv%
 
         Assembly assembly;
-        string source = "Console.WriteLine(\"Hello, World!\");";
+        // string source = "Console.WriteLine(\"Hello, World!\");";
 
         // var tree = CSharpSyntaxTree.ParseText (@"class Program 
         // {
@@ -26,7 +26,7 @@ public class CodeCompiler : ICompiler
         string randomAssemblyName = Path.GetRandomFileName();
 
         SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(
-            source,
+            sourceCode,
             CSharpParseOptions.Default.WithKind(SourceCodeKind.Script).WithLanguageVersion(LanguageVersion.Default)
         );
 
@@ -46,13 +46,13 @@ public class CodeCompiler : ICompiler
         //     "System.Threading.Tasks"
         // };
 
-        string[] defaultNamespaces = new[] {
-            "System"
-        };
+        // string[] defaultNamespaces = new[] {
+        //     "System"
+        // };
 
         CSharpCompilationOptions? options = new(
             outputKind: OutputKind.DynamicallyLinkedLibrary,
-            usings: defaultNamespaces
+            usings: imports
         );
         // OutputKind.ConsoleApplication
 
