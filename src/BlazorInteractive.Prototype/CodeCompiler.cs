@@ -1,3 +1,4 @@
+using System.ComponentModel.Design.Serialization;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -27,7 +28,7 @@ public class CodeCompiler : ICompiler
 
         SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(
             sourceCode,
-            CSharpParseOptions.Default.WithKind(SourceCodeKind.Script).WithLanguageVersion(LanguageVersion.Default)
+            CSharpParseOptions.Default.WithKind(SourceCodeKind.Regular).WithLanguageVersion(LanguageVersion.Default)
         );
 
         IEnumerable<SyntaxTree> syntaxTrees = new List<SyntaxTree>() { syntaxTree };
@@ -51,7 +52,7 @@ public class CodeCompiler : ICompiler
         // };
 
         CSharpCompilationOptions? options = new(
-            outputKind: OutputKind.DynamicallyLinkedLibrary,
+            outputKind: OutputKind.ConsoleApplication,
             usings: imports
         );
         // OutputKind.ConsoleApplication
@@ -115,22 +116,58 @@ public class CodeCompiler : ICompiler
 
         // if (assembly is null) return;
 
-        var writer = new StringWriter();
-        Console.SetOut(writer);
+        var fullname = assembly.FullName;
+        Console.WriteLine(fullname);
+
+        foreach(Type exportedType in assembly.GetExportedTypes())
+        {
+            string fullName = exportedType.FullName;
+            string nameSpace = exportedType.Namespace;
+            Console.WriteLine($"Fullname: {fullName} Namespace: {nameSpace}");
+        }
 
         var entryPoint = compilation.GetEntryPoint(CancellationToken.None);
+        Console.WriteLine(entryPoint);
+        Console.WriteLine(entryPoint.ContainingNamespace.MetadataName);
+        Console.WriteLine(entryPoint.ContainingType.MetadataName);
+
         var type = assembly.GetType($"{entryPoint.ContainingNamespace.MetadataName}.{entryPoint.ContainingType.MetadataName}");
+
+        //var type = assembly.GetType("Test.Program"); // "Script+Program"
         Console.WriteLine(type);
-        var entryPointMethod = type.GetMethod(entryPoint.MetadataName);
+        //var entryPointMethod = type.GetMethod(entryPoint.MetadataName); // <Factory>
+
+        // var methods = type.GetMethods();
+        //
+        //var entryPointMethod = type.GetMethod("Main"); // "Void Main()"
+
+        var entryPointMethod = type.GetRuntimeMethods().FirstOrDefault();
+
         Console.WriteLine(entryPointMethod);
 
-        var submission = (Func<object[], Task>)entryPointMethod.CreateDelegate(typeof(Func<object[], Task>));
+        var instance = Activator.CreateInstance(type);
 
-        var returnValue = await ((Task<object>)submission(_submissionStates));
+        var defaultWriter = Console.Out;
+        
+        using var writer = new StringWriter();
+        Console.SetOut(writer);
+        
+        var output = entryPointMethod.Invoke(instance, default);
+        
+        var result = writer.ToString();
+        
+        Console.SetOut(defaultWriter);
+
+        //var submission = (Func<object[], Task>)entryPointMethod.CreateDelegate(typeof(Func<object[], Task>));
+
+        var submission = entryPointMethod.CreateDelegate<Func<int>>();
+
+        //var returnValue = await ((Task<object>)submission(_submissionStates));
+        var returnValue = submission();
         if (returnValue != null)
         {
             // Console.WriteLine(CSharpObjectFormatter.Instance.FormatObject(returnValue));
-            return CSharpObjectFormatter.Instance.FormatObject(returnValue);
+            //return CSharpObjectFormatter.Instance.FormatObject(returnValue);
         }
 
         // var output = HttpUtility.HtmlEncode(writer.ToString());
