@@ -11,33 +11,34 @@ IList<string> imports = new List<string>
     "System"
 };
 
-// var sc = new ScriptCompiler();
-// var scriptOutput = sc.Compile(sourceCode, imports);
-// Console.WriteLine(scriptOutput);
+var sc = new ScriptCompiler();
+var scriptOutput = await sc.Compile(sourceCode, imports);
+Console.WriteLine(scriptOutput);
+
+// // sourceCode = @"
+// // class Program 
+// // {
+// //     static void Main() => System.Console.WriteLine(""Hello"");
+// // }";
 
 // sourceCode = @"
-// class Program 
+// namespace Test
 // {
-//     static void Main() => System.Console.WriteLine(""Hello"");
-// }";
+//     class Program 
+//     {
+//         static int Main()
+//         { 
+//             System.Console.WriteLine(""Hello"");
+//             return 1;
+//         }
+//     }
+// }
+// ";
 
-sourceCode = @"
-namespace Test
-{
-    class Program 
-    {
-        static int Main()
-        { 
-            System.Console.WriteLine(""Hello"");
-            return 1;
-        }
-    }
-}
-";
+// var cc = new CodeCompiler();
+// var codeOutput = await cc.Compile(sourceCode, imports);
 
-var cc = new CodeCompiler();
-var codeOutput = await cc.Compile(sourceCode, imports);
+// // Console.WriteLine(scriptOutput);
 
-// Console.WriteLine(scriptOutput);
-
-Console.ReadLine();
+//Console.ReadLine();
+Console.WriteLine("Finished");
