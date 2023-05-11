@@ -7,15 +7,14 @@ public class ScriptCompiler : ICompiler
 {
     public async Task<CompilationResult> CompileAsync(string sourceCode, IEnumerable<string> imports, CancellationToken cancellationToken = default)
     {
-        if (sourceCode is null)
+        if (string.IsNullOrEmpty(sourceCode))
         {
-            return new Failure();
+            return new Failure($"{nameof(sourceCode)} cannot be null or empty");
         }
         
-        // if (!imports?.Any())
-        if (imports is null || imports.Count() == 0)
+        if (imports is null || !imports.Any())
         {
-            return new Failure();
+            return new Failure($"{nameof(imports)} cannot be null or empty");
         }
 
         // // Grab any Console info.
@@ -32,7 +31,11 @@ public class ScriptCompiler : ICompiler
         }
         catch (CompilationErrorException cee)
         {
-            return new Failure();
+            return new Failure(cee, cee.Message);
+        }
+        catch (OperationCanceledException)
+        {
+            return new Cancelled();
         }
     }
 }

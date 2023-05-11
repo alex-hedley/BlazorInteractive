@@ -356,3 +356,6 @@ MigrationBackup/
 
 # macOS
 .DS_Store
+
+**/coveragereport/**/**
+src/coverage.json

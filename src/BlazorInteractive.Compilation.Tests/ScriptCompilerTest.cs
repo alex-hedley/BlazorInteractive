@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis.Scripting;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Scripting;
+using System.Collections.Immutable;
 
 using FluentAssertions;
 
@@ -20,58 +22,57 @@ public class ScriptCompilerTest
         _sourceCode = "Console.WriteLine(\"Hello, World!\");";
     }
 
-    // [Fact]
-    // public async Task CompileAsync_WithoutCode_ThrowsException()
-    // {
-    //     var source = String.Empty;
-        
-    //     Func<Task> act = () => _compiler.CompileAsync(source, _defaultImports);
+    [Fact]
+    public async Task CompileAsync_WithCode_ReturnsSuccessWithResult()
+    {
+        var sourceCode = "1 + 1";
 
-    //     await act.Should().ThrowAsync<ArgumentException>();
-    // }
+        var result = await _compiler.CompileAsync(sourceCode, _defaultImports);
+        result.Value.Should().Be(new Success("2"));
+    }
 
-    // [Fact]
-    // public async Task CompileAsync_WithoutImports_ThrowsException()
-    // {
-    //     Func<Task> act = () => _compiler.CompileAsync(_sourceCode, null);
-
-    //     await act.Should().ThrowAsync<ArgumentNullException>();
-    // }
-
-    // [Fact]
-    // public async Task CompileAsync_WithCancellationToken_ThrowsException()
-    // {
-    //     var cancellationTokenSource = new CancellationTokenSource();
-    //     var cancellationToken = cancellationTokenSource.Token;
-        
-    //     Func<Task> act = () => _compiler.CompileAsync(_sourceCode, _defaultImports, cancellationToken);
-
-    //     cancellationTokenSource.Cancel();
-    //     await act.Should().ThrowAsync<OperationCanceledException>();
-    // }
-    
     [Fact]
     public async Task CompileAsync_WithCodeWithNoResult_ReturnsVoid()
     {
         var result = await _compiler.CompileAsync(_sourceCode, _defaultImports);
-        result.Value.Should().Be(new Void());
+        result.Value.Should().BeOfType<Void>();
     }
 
-    // [Fact]
-    // public async Task CompileAsync_WithBadCode_ThrowsCompilationErrorException()
-    // {
-    //     var source = "lolCat";
-
-    //     Func<Task> act = () => _compiler.CompileAsync(source, _defaultImports);
-    //     await act.Should().ThrowAsync<CompilationErrorException>();
-    // }
+    [Fact]
+    public async Task CompileAsync_WithoutCode_ReturnFailure()
+    {
+        var sourceCode = String.Empty;
+        
+        var result = await _compiler.CompileAsync(sourceCode, _defaultImports);
+        result.Value.Should().Be(new Failure($"{nameof(sourceCode)} cannot be null or empty"));
+    }
 
     [Fact]
-    public async Task CompileAsync_WithCode_ReturnsSuccessWithResult()
+    public async Task CompileAsync_WithoutImports_ReturnFailure()
     {
-        var source = "1 + 1";
+        List<string> imports = new List<string>();
+        
+        var result = await _compiler.CompileAsync(_sourceCode, imports);
+        result.Value.Should().Be(new Failure($"{nameof(imports)} cannot be null or empty"));
+    }
 
-        var result = await _compiler.CompileAsync(source, _defaultImports);
-        result.Value.Should().Be(new Success("2"));
+    [Fact]
+    public async Task CompileAsync_WithCancellationToken_ReturnsCancelled()
+    {
+        var cancellationTokenSource = new CancellationTokenSource();
+        var cancellationToken = cancellationTokenSource.Token;
+        
+        cancellationTokenSource.Cancel();
+        var result = await _compiler.CompileAsync(_sourceCode, _defaultImports, cancellationToken);
+        result.Value.Should().BeOfType<Cancelled>();
+    }
+    
+    [Fact]
+    public async Task CompileAsync_WithBadCode_ThrowsCompilationErrorException()
+    {
+        var sourceCode = "lolCat";
+        var result = await _compiler.CompileAsync(sourceCode, _defaultImports);
+
+        result.Value.As<Failure>().Exception.Should().BeOfType<CompilationErrorException>();
     }
 }

@@ -2,4 +2,4 @@ using OneOf;
 
 namespace BlazorInteractive.Compilation;
 
-public sealed record Success(string Value);
+public sealed record Cancelled();
