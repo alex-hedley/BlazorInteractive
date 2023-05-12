@@ -11,7 +11,7 @@ public class ScriptCompiler : ICompiler
         {
             return new Failure($"{nameof(sourceCode)} cannot be null or empty");
         }
-        
+
         if (imports is null || !imports.Any())
         {
             return new Failure($"{nameof(imports)} cannot be null or empty");

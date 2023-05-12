@@ -20,9 +20,19 @@ ReportGenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:cove
 
 ## coverlet.console
 
+### x86/x64 installation
+
 ```shell
 dotnet tool install --global coverlet.console
 ```
+
+### ARM installation
+
+```shell
+dotnet tool install coverlet.console -g -a arm64
+```
+
+### Running manually
 
 > `coverlet /path/to/test-assembly.dll --target "dotnet" --targetargs "test /path/to/test-project --no-build"`
 

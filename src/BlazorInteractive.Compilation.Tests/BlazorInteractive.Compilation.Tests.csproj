@@ -27,7 +27,7 @@
     <ProjectReference Include="..\BlazorInteractive.Compilation\BlazorInteractive.Compilation.csproj" />
   </ItemGroup>
 
-  <Target Name="MyTarget" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
+  <Target Name="CoverletAfterBuild" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
     <Exec Command="coverlet $([System.IO.Path]::Combine($(OutDir),$(TargetFileName))) --target 'dotnet' --targetargs 'test --no-build'" />
   </Target>
 
