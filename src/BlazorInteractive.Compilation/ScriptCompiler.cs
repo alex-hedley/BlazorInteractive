@@ -5,7 +5,15 @@ namespace BlazorInteractive.Compilation;
 
 public class ScriptCompiler : ICompiler
 {
-    public async Task<CompilationResult> CompileAsync(string sourceCode, IEnumerable<string> imports, CancellationToken cancellationToken = default)
+    private IReferenceResolver _referenceResolver;
+
+    public ScriptCompiler(IReferenceResolver referenceResolver)
+    {
+        _referenceResolver = referenceResolver;
+    }
+
+
+    public async Task<CompilationResult> CompileAsync(string sourceCode, ICollection<string>? imports, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(sourceCode))
         {
@@ -26,8 +34,17 @@ public class ScriptCompiler : ICompiler
 
         try
         {
-            object result = await CSharpScript.EvaluateAsync(sourceCode, ScriptOptions.Default.WithImports(imports), cancellationToken: cancellationToken);
-            return (result is null) ? new Void() : new Success(result.ToString()!);
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var references = await _referenceResolver.ResolveAsync(assemblies, cancellationToken);
+
+            return await references.Match<Task<CompilationResult>>(
+                async refs =>
+                {
+                    var scriptOptions = ScriptOptions.Default.WithImports(imports).WithReferences(refs);
+                    object result = await CSharpScript.EvaluateAsync(sourceCode, scriptOptions, cancellationToken: cancellationToken);
+                    return (result is null) ? new Void() : new Success(result.ToString()!);
+                },
+                async failure => await Task.FromResult(failure));
         }
         catch (CompilationErrorException cee)
         {
@@ -38,4 +55,25 @@ public class ScriptCompiler : ICompiler
             return new Cancelled();
         }
     }
+
+    // private IEnumerable<MetadataReference> _references;
+
+    // protected async override Task OnInitializedAsync()
+    // {
+    //     var refs = AppDomain.CurrentDomain.GetAssemblies();
+    //     var client = new HttpClient 
+    //     {
+    //             BaseAddress = new Uri(navigationManager.BaseUri)
+    //     };
+
+    //     var references = new List<MetadataReference>();
+
+    //     foreach(var reference in refs.Where(x => !x.IsDynamic && !string.IsNullOrWhiteSpace(x.Location)))
+    //     {
+    //         var stream = await client.GetStreamAsync($"_framework/{reference.Location}");
+    //         references.Add(MetadataReference.CreateFromStream(stream));
+    //     }
+    //     Disabled = false;
+    //     _references = references;
+    // }
 }

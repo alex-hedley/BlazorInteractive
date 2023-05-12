@@ -20,5 +20,9 @@
         <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
         <PackageReference Include="OneOf" Version="3.0.243" />
     </ItemGroup>
-    
+
+    <ItemGroup>
+        <ProjectReference Include="..\BlazorInteractive.Compilation\BlazorInteractive.Compilation.csproj" />
+    </ItemGroup>
+
 </Project>

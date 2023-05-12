@@ -1,13 +1,14 @@
 ﻿@using BlazorInteractive.Components.Editor
 @using BlazorInteractive.Components.Output
 @page "/"
+@inject ScriptCompiler ScriptCompiler
 
 <PageTitle>Index</PageTitle>
 
 <div class="container">
     <div class="row">
         <div class="col">
-            <EditorComponent OnCompile="OnCompile"></EditorComponent>
+            <EditorComponent OnCompile="OnCompileAsync"></EditorComponent>
         </div>
     </div>
     <div class="row mt-2">
@@ -19,9 +20,10 @@
 
 @code {
     private string output = string.Empty;
-    
-    private void OnCompile(string editorText)
+
+    private async Task OnCompileAsync(string editorText)
     {
-        output = editorText;
+        CompilationResult compilationResult = await ScriptCompiler.CompileAsync(editorText, new[] { "System" });
+        output = compilationResult.AsT0.Value;
     }
 }
