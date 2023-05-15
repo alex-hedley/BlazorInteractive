@@ -15,14 +15,11 @@ public class LocalFileReferenceResolverTest
     
     private readonly List<string> _defaultAssemblyNames;
 
-    private readonly string _sourceCode = string.Empty;
-
     public LocalFileReferenceResolverTest()
     {
         _localFileReferenceResolver = new LocalFileReferenceResolver();
         _defaultAssemblyNames = new List<string> { "System", "System.Collections" };
         _defaultAssemblies = _defaultAssemblyNames.Select(ass => Assembly.Load(ass)); //AppDomain.CurrentDomain.GetAssemblies();
-        _sourceCode = "Console.WriteLine(\"Hello, World!\");";
     }
 
     [Fact]
