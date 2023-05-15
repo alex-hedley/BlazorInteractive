@@ -44,7 +44,8 @@ public class ScriptCompiler : ICompiler
                     object result = await CSharpScript.EvaluateAsync(sourceCode, scriptOptions, cancellationToken: cancellationToken);
                     return (result is null) ? new Void() : new Success(result.ToString()!);
                 },
-                async failure => await Task.FromResult(failure));
+                async failure => await Task.FromResult(failure),
+                async cancelled => await Task.FromResult(cancelled));
         }
         catch (CompilationErrorException cee)
         {

@@ -2,8 +2,6 @@
 using Microsoft.CodeAnalysis.Scripting;
 using System.Collections.Immutable;
 
-using FluentAssertions;
-
 using BlazorInteractive.Compilation;
 
 namespace BlazorInteractive.Compilation.Tests;
@@ -17,7 +15,7 @@ public class ScriptCompilerTest
     
     public ScriptCompilerTest()
     {
-        _compiler = new ScriptCompiler();
+        _compiler = new ScriptCompiler(new LocalFileReferenceResolver());
         _defaultImports = new List<string>() { "System" };
         _sourceCode = "Console.WriteLine(\"Hello, World!\");";
     }
