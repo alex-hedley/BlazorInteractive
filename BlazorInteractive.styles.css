@@ -158,6 +158,22 @@ main[b-3ipp1505bs] {
 /* /Components/Output/OutputComponent.razor.rz.scp.css */
 div[b-thtwn92nhp] {
     background: black;
-    color: green;
+    color: white;
     font-family: monospace;
+}
+
+.normal[b-thtwn92nhp] {
+    color: white;
+}
+
+.success[b-thtwn92nhp] {
+    color: green;
+}
+
+.error[b-thtwn92nhp] {
+    color: red;
+}
+
+.warning[b-thtwn92nhp] {
+    color: orange;
 }
