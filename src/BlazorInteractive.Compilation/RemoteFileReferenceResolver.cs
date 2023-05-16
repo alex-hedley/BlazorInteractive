@@ -27,15 +27,15 @@ public class RemoteFileReferenceResolver : IReferenceResolver
 
             foreach(var reference in assemblies.Where(x => !x.IsDynamic && !string.IsNullOrWhiteSpace(x.Location)))
             {
-                using var stream = await _httpClient.GetStreamAsync($"_framework/{reference.Location}");
+                using var stream = await _httpClient.GetStreamAsync($"_framework/{reference.Location}", cancellationToken);
                 references.Add(MetadataReference.CreateFromStream(stream));
             }
-            
+
             result = references.AsReadOnly();
         } catch (Exception ex) {
             result = new Failure(ex, $"{ex.Message}");
         }
-        
+
         return result;
     }
 }
