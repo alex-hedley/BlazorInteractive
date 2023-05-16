@@ -13,13 +13,14 @@
     </div>
     <div class="row mt-2">
         <div class="col">
-            <OutputComponent Content="@output"></OutputComponent>
+            <OutputComponent Content="@output" OutputClass="@outputClass"></OutputComponent>
         </div>
     </div>
 </div>
 
 @code {
     private string output = string.Empty;
+    private string outputClass = string.Empty;
 
     private async Task OnCompileAsync(string editorText)
     {
@@ -27,15 +28,19 @@
         //Can't create a metadata reference to an assembly without location.
         output = compilationResult.Match(
             success => {
+                outputClass = "success";
                 return success.Value;
             },
             @void => {
+                outputClass = "";
                 return string.Empty;
             },
             failure => {
+                outputClass = "error";
                 return failure.Exception.Message;
             },
             cancelled => {
+                outputClass = "warning";
                 return string.Empty;
             }
         );

@@ -1,5 +1,21 @@
 div {
     background: black;
-    color: green;
+    color: white;
     font-family: monospace;
+}
+
+.normal {
+    color: white;
+}
+
+.success {
+    color: green;
+}
+
+.error {
+    color: red;
+}
+
+.warning {
+    color: orange;
 }

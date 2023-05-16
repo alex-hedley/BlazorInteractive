@@ -1,15 +1,28 @@
-<div id="Output">
+<div id="Output" class="@OutputClass">
     @Content
 </div>
 
 @code {
-
     [Parameter]
     public string Content { get; set; }
+
+    [Parameter]
+    public string OutputClass { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        OutputClass = "normal";
+    }
 
     public void SetContent(string content)
     {
         Content = content;
+        StateHasChanged();
+    }
+
+    public void SetClass(string outputClass)
+    {
+        OutputClass = outputClass;
         StateHasChanged();
     }
 
