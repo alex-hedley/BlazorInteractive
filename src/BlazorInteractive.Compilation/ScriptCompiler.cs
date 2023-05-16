@@ -5,7 +5,7 @@ namespace BlazorInteractive.Compilation;
 
 public class ScriptCompiler : ICompiler
 {
-    private IReferenceResolver _referenceResolver;
+    private readonly IReferenceResolver _referenceResolver;
 
     public ScriptCompiler(IReferenceResolver referenceResolver)
     {
@@ -34,6 +34,11 @@ public class ScriptCompiler : ICompiler
 
         try
         {
+            /*
+                TODO: Replace loading assemblies with a IAssemblyResolver
+                Need to use blazor BootstrapInfo.FromJson and load from blazor.boot.json, as Blazor does not work with AppDomain.CurrentDomain.GetAssemblies()
+            */
+            var appDomain = AppDomain.CurrentDomain;
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             var references = await _referenceResolver.ResolveAsync(assemblies, cancellationToken);
 
@@ -47,13 +52,13 @@ public class ScriptCompiler : ICompiler
                 async failure => await Task.FromResult(failure),
                 async cancelled => await Task.FromResult(cancelled));
         }
-        catch (CompilationErrorException cee)
-        {
-            return new Failure(cee, cee.Message);
-        }
         catch (OperationCanceledException)
         {
             return new Cancelled();
+        }
+        catch (Exception ex)
+        {
+            return new Failure(ex, ex.Message);
         }
     }
 
