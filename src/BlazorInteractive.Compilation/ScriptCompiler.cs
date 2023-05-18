@@ -34,13 +34,7 @@ public class ScriptCompiler : ICompiler
 
         try
         {
-            /*
-                TODO: Replace loading assemblies with a IAssemblyResolver
-                Need to use blazor BootstrapInfo.FromJson and load from blazor.boot.json, as Blazor does not work with AppDomain.CurrentDomain.GetAssemblies()
-            */
-            var appDomain = AppDomain.CurrentDomain;
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var references = await _referenceResolver.ResolveAsync(assemblies, cancellationToken);
+            var references = await _referenceResolver.ResolveAsync(imports, cancellationToken);
 
             return await references.Match<Task<CompilationResult>>(
                 async refs =>

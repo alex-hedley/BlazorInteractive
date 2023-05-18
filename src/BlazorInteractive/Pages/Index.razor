@@ -24,7 +24,7 @@
 
     private async Task OnCompileAsync(string editorText)
     {
-        CompilationResult compilationResult = await ScriptCompiler.CompileAsync(editorText, new[] { "System" });
+        CompilationResult compilationResult = await ScriptCompiler.CompileAsync(editorText, new[] { "System.dll" });
         //Can't create a metadata reference to an assembly without location.
         output = compilationResult.Match(
             success => {

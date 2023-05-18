@@ -6,7 +6,7 @@ namespace BlazorInteractive.Compilation;
 
 public class LocalFileReferenceResolver : IReferenceResolver
 {
-    public Task<ReferenceResult> ResolveAsync(IEnumerable<Assembly> assemblies, CancellationToken cancellationToken = default)
+    public Task<ReferenceResult> ResolveAsync(IEnumerable<string> importNames, CancellationToken cancellationToken = default)
     {
         ReferenceResult result;
 
@@ -14,6 +14,10 @@ public class LocalFileReferenceResolver : IReferenceResolver
             result = new Cancelled();
             return Task.FromResult(result);
         }
+
+        //var appDomain = AppDomain.CurrentDomain;
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        //assemblies = assemblies.Where(a => importNames.Contains(a.FullName));
 
         try {
             result = assemblies
