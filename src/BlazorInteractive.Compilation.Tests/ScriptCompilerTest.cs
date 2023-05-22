@@ -3,19 +3,31 @@ using Microsoft.CodeAnalysis.Scripting;
 using System.Collections.Immutable;
 
 using BlazorInteractive.Compilation;
+using System.Reflection;
 
 namespace BlazorInteractive.Compilation.Tests;
 
 public class ScriptCompilerTest
 {
+    private readonly Mock<IAssemblyAccessor> _assemblyAccessor;
+    private readonly CancellationToken _defaultCancellationToken;
     private readonly ScriptCompiler _compiler;
     private readonly List<string> _defaultImports;
 
     private readonly string _sourceCode = string.Empty;
+    private static Assembly[] _appDomainAssemblies;
+
+    static ScriptCompilerTest()
+    {
+        _appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+    }
     
     public ScriptCompilerTest()
     {
-        _compiler = new ScriptCompiler(new LocalFileReferenceResolver());
+        _assemblyAccessor = new Mock<IAssemblyAccessor>();
+        _assemblyAccessor.Setup(a => a.GetAsync(_defaultCancellationToken)).ReturnsAsync(_appDomainAssemblies.ToList().AsReadOnly());
+        _defaultCancellationToken = CancellationToken.None;
+        _compiler = new ScriptCompiler(new LocalFileReferenceResolver(_assemblyAccessor.Object));
         _defaultImports = new List<string>() { "System" };
         _sourceCode = "Console.WriteLine(\"Hello, World!\");";
     }
@@ -23,6 +35,8 @@ public class ScriptCompilerTest
     [Fact]
     public async Task CompileAsync_WithCode_ReturnsSuccessWithResult()
     {
+        // _assemblyAccessor.Setup(a => a.GetAsync(_defaultCancellationToken)).ReturnsAsync(_appDomainAssemblies.ToList().AsReadOnly());
+
         var sourceCode = "1 + 1";
 
         var result = await _compiler.CompileAsync(sourceCode, _defaultImports);

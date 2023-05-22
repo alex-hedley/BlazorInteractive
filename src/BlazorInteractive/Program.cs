@@ -11,6 +11,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped<ScriptCompiler>();
 builder.Services.AddScoped<IReferenceResolver, RemoteFileReferenceResolver>();
 builder.Services.AddScoped<IStorageAccessor, CacheStorageAccessor>();
+// builder.Services.AddScoped<IAssemblyAccessor, >();
 
 builder.Services.AddHttpClient<IReferenceResolver, RemoteFileReferenceResolver>(client => {
     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);

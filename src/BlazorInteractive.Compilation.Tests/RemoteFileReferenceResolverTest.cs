@@ -1,12 +1,11 @@
 
 using Microsoft.CodeAnalysis;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Reflection;
 
 using Moq.Protected;
-
-using System.Collections;
 
 using static BlazorInteractive.Compilation.Tests.RemoteFileReferenceResolverTestData;
 
@@ -14,6 +13,18 @@ namespace BlazorInteractive.Compilation.Tests;
 
 public class RemoteFileReferenceResolverTest
 {
+    private readonly Mock<IAssemblyAccessor> _assemblyAccessor;
+    // private readonly CancellationToken _defaultCancellationToken;
+
+    private Mock<IStorageAccessor> _storageAccessor;
+
+    public RemoteFileReferenceResolverTest()
+    {
+        _assemblyAccessor = new Mock<IAssemblyAccessor>();
+        // _defaultCancellationToken = CancellationToken.None;
+        _storageAccessor = new Mock<IStorageAccessor>();
+    }
+
     [Theory]
     [ClassData(typeof(RemoteFileReferenceResolverTestData))]
     public async Task ResolveAsync_WithDefaultAssemblies_ReturnsItems(string assemblyName)
@@ -42,9 +53,9 @@ public class RemoteFileReferenceResolverTest
             });
 
         var httpClient = CreateHttpClient(BaseAddress, mockMessageHandler.Object);
-        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(httpClient);
+        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(httpClient, _storageAccessor.Object);
 
-        var result = await remoteFileReferenceResolver.ResolveAsync(new[] { assembly });
+        var result = await remoteFileReferenceResolver.ResolveAsync(new [] { assemblyName });
         result.Value.Should().NotBeNull();
         result.Value.As<ReadOnlyCollection<MetadataReference>>().Should().NotBeEmpty();
     }
@@ -53,13 +64,15 @@ public class RemoteFileReferenceResolverTest
     public async Task ResolveAsync_WithBadAssembly_ReturnsFailure()
     {
         var badAssembly = new Mock<Assembly>();
+        badAssembly.Setup(m => m.FullName).Returns(InvalidAssembly);
         badAssembly.Setup(m => m.IsDynamic).Returns(false);
         badAssembly.Setup(m => m.Location).Returns(InvalidAssembly);
 
         var baseAssemblies = new List<Assembly> { badAssembly.Object };
-        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(CreateHttpClient(BaseAddress));
+        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(CreateHttpClient(BaseAddress), _storageAccessor.Object);
+        var baseAssemblyNames = baseAssemblies.Select(a => a.FullName);
 
-        var result = await remoteFileReferenceResolver.ResolveAsync(baseAssemblies);
+        var result = await remoteFileReferenceResolver.ResolveAsync(baseAssemblyNames);
 
         result.Value.Should().BeOfType<Failure>();
         result.Value.As<Failure>().Exception.Should().BeOfType<HttpRequestException>();
@@ -68,14 +81,14 @@ public class RemoteFileReferenceResolverTest
     [Fact]
     public async Task ResolveAsync_WithCancellationToken_ReturnsCancelled()
     {
-        Assembly assembly = Assembly.Load(SystemAssembly);
+        // Assembly assembly = Assembly.Load(SystemAssembly);
         var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
 
-        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(CreateHttpClient(BaseAddress));
+        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(CreateHttpClient(BaseAddress), _storageAccessor.Object);
 
         cancellationTokenSource.Cancel();
-        var result = await remoteFileReferenceResolver.ResolveAsync(new[] { assembly }, cancellationToken);
+        var result = await remoteFileReferenceResolver.ResolveAsync(new[] { SystemAssembly }, cancellationToken);
         result.Value.Should().BeOfType<Cancelled>();
     }
 

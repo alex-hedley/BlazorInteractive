@@ -5,6 +5,8 @@ using Microsoft.JSInterop;
 
 using BlazorInteractive.Compilation;
 
+namespace BlazorInteractive.AssemblyCompilation;
+
 public class CacheStorageAccessor : IStorageAccessor
 {
     private Lazy<IJSObjectReference> _accessorJsRef = new();

@@ -1,53 +1,47 @@
 using Microsoft.CodeAnalysis;
-
 using System.Reflection;
 
 namespace BlazorInteractive.Compilation;
 
 public class LocalFileReferenceResolver : IReferenceResolver
 {
-    public Task<ReferenceResult> ResolveAsync(IEnumerable<string> importNames, CancellationToken cancellationToken = default)
+    private readonly IAssemblyAccessor _assemblyAccessor;
+
+    public LocalFileReferenceResolver(IAssemblyAccessor assemblyAccessor)
+    {
+        _assemblyAccessor = assemblyAccessor;
+    }
+
+    public async Task<ReferenceResult> ResolveAsync(IEnumerable<string> importNames, CancellationToken cancellationToken = default)
     {
         ReferenceResult result;
 
         if (cancellationToken.IsCancellationRequested) {
-            result = new Cancelled();
-            return Task.FromResult(result);
+            return new Cancelled();
         }
+        
+        try
+        {    
+            AssemblyResult assembliesResult = await _assemblyAccessor.GetAsync(cancellationToken);
 
-        //var appDomain = AppDomain.CurrentDomain;
-        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        //assemblies = assemblies.Where(a => importNames.Contains(a.FullName));
-
-        try {
-            result = assemblies
-                .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location))
-                .Select(a => MetadataReference.CreateFromFile(a.Location))
-                .Cast<MetadataReference>()
-                .ToList()
-                .AsReadOnly();
+            result = assembliesResult
+                .Match<ReferenceResult>(
+                    assemblies => {
+                        return assemblies
+                            .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location))
+                            .Select(a => MetadataReference.CreateFromFile(a.Location))
+                            .Cast<MetadataReference>()
+                            .ToList()
+                            .AsReadOnly();
+                    }, 
+                    failure => failure,
+                    cancelled => cancelled
+                );
 
         } catch (Exception ex) {
             result = new Failure(ex, $"{ex.Message}");
         }
         
-        return Task.FromResult(result);
+        return result;
     }
 }
-
-// private IEnumerable<MetadataReference> _references;
-
-// var refs = AppDomain.CurrentDomain.GetAssemblies();
-// var client = new HttpClient 
-// {
-//         BaseAddress = new Uri(navigationManager.BaseUri)
-// };
-
-// var references = new List<MetadataReference>();
-
-// foreach(var reference in refs.Where(x => !x.IsDynamic && !string.IsNullOrWhiteSpace(x.Location)))
-// {
-//     var stream = await client.GetStreamAsync($"_framework/{reference.Location}");
-//     references.Add(MetadataReference.CreateFromStream(stream));
-// }
-// _references = references;
