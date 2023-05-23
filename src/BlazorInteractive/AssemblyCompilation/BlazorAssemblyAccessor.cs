@@ -1,8 +1,6 @@
-
 using System.Reflection;
-using System.Text;
+using System.Runtime.Loader;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 using BlazorInteractive.Compilation;
 
@@ -11,44 +9,54 @@ namespace BlazorInteractive.AssemblyCompilation;
 public class BlazorAssemblyAccessor : IAssemblyAccessor
 {
     private readonly HttpClient _httpClient;
+    private readonly IStorageAccessor _storageAccessor;
 
-    public BlazorAssemblyAccessor(HttpClient httpClient)
+    public BlazorAssemblyAccessor(HttpClient httpClient, IStorageAccessor storageAccessor)
     {
         _httpClient = httpClient;
+        _storageAccessor = storageAccessor;
     }
 
     public async Task<AssemblyResult> GetAsync(CancellationToken cancellationToken)
     {
-        // https://stackoverflow.com/a/73944260
-        using HttpResponseMessage response = await _httpClient.GetAsync($"_framework/blazor.boot.json");
-        response.EnsureSuccessStatusCode();
-        string json = await response.Content.ReadAsStringAsync();
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        var bootstrap = JsonSerializer.Deserialize<BootstrapInfo>(json, options);
-
-        // Response status code does not indicate success: 404 (Not Found).
-        Console.WriteLine("================================");
-        try {
-            var bootstrapAssemblies = bootstrap.Assemblies(importNames);
-            var references = new List<MetadataReference>();
-            foreach(var assembly in bootstrapAssemblies)
-            {
-                Console.WriteLine(assembly);
-                var message = new HttpRequestMessage(HttpMethod.Get, $"_framework/{assembly}");
-                var file = await _storageAccessor.GetAsync(message);
-
-                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(file)))
-                {
-                    references.Add(MetadataReference.CreateFromStream(stream));
-                }
-            }
-            // Serialization and deserialization of 'System.IntPtr' instances are not supported. Path: $.WaitHandle.Handle.
-            // Can't create a metadata reference to an assembly without location.
-
-            result = references.AsReadOnly();
-        } catch (Exception ex) {
-            result = new Failure(ex, $"{ex.Message}");
+        
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return new Cancelled();
         }
-        Console.WriteLine("--------------------------------");
+        
+        try
+        {
+            // https://stackoverflow.com/a/73944260
+            using HttpResponseMessage response = await _httpClient.GetAsync($"_framework/blazor.boot.json", cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new Failure("blazor.boot.json failed to load");
+            }
+
+            string json = await response.Content.ReadAsStringAsync(cancellationToken);
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            var bootstrap = JsonSerializer.Deserialize<BootstrapInfo>(json, options);
+            if (bootstrap is null)
+            {
+                return new Failure("No Assemblies found in blazor.boot.json");
+            }
+
+            var assemblies = new List<Assembly>();
+            foreach(var assemblyName in bootstrap.Assemblies())
+            {
+                var message = new HttpRequestMessage(HttpMethod.Get, $"_framework/{assemblyName}");
+                var stream = await _storageAccessor.GetAsStreamAsync(message, cancellationToken);
+                Assembly assembly = AssemblyLoadContext.Default.LoadFromStream(stream);
+                assemblies.Add(assembly);
+            }
+            return assemblies.AsReadOnly();
+        }
+        catch (Exception ex)
+        {
+            return new Failure(ex, $"{ex.Message}");
+        }
+
     }
 }

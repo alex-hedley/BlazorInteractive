@@ -4,11 +4,16 @@ public sealed record BootstrapInfo
 {
     public BootstrapInfoResources Resources { get; set; }
 
-    public IEnumerable<string> Assemblies(IEnumerable<string> filter)
+    public IEnumerable<string> Assemblies(IEnumerable<string>? filter = default)
     {
-        return Resources.Assembly
-            .Where(a => !string.IsNullOrWhiteSpace(a.Key) || !string.IsNullOrWhiteSpace(a.Value))
-            .Where(a => filter.Contains(a.Key))
-            .Select(a => $"{a.Key}.{a.Value}");
+        var query = Resources.Assembly
+            .Where(a => !string.IsNullOrWhiteSpace(a.Key) || !string.IsNullOrWhiteSpace(a.Value));
+
+        if (filter is not null)
+        {
+            query = query.Where(a => filter.Contains(a.Key));
+        }
+        
+        return query.Select(a => $"{a.Key}.{a.Value}");
     }
 }

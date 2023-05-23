@@ -26,10 +26,20 @@ public class RemoteFileReferenceResolver : IReferenceResolver
             return result;
         }
 
-        var asemblies = _assemblyAccessor.GetAsync(cancellationToken);
-
-
-        return result;
+        var assemblies = await _assemblyAccessor.GetAsync(cancellationToken);
+        
+        return assemblies.Match<ReferenceResult>(
+            assemblies => {
+                return assemblies
+                    .Select(a => MetadataReference.CreateFromFile(a.Location))
+                    .Cast<MetadataReference>()
+                    .ToList()
+                    .AsReadOnly();
+                    
+            }, 
+            failure => failure,
+            cancelled => cancelled
+        );
     }
 
 }

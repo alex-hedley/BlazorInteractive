@@ -25,14 +25,27 @@ public class CacheStorageAccessor : IStorageAccessor
         }
     }
 
-    public async Task<string> GetAsync(HttpRequestMessage requestMessage, CancellationToken cancellationToken)
+    public async Task<string> GetAsStringAsync(HttpRequestMessage requestMessage, CancellationToken cancellationToken)
     {
         await WaitForReference(cancellationToken);
         string requestMethod = requestMessage.Method.Method;
-        string requestBody = await GetRequestBodyAsync(requestMessage, cancellationToken);
+        string requestBody = await GetRequestBodyAsStringAsync(requestMessage, cancellationToken);
         string result = await _accessorJsRef.Value.InvokeAsync<string>("get", requestMessage.RequestUri, requestMethod, requestBody);
 
         return result;
+    }
+
+    public async Task<Stream> GetAsStreamAsync(HttpRequestMessage requestMessage, CancellationToken cancellationToken)
+    {
+        await WaitForReference(cancellationToken);
+        string requestMethod = requestMessage.Method.Method;
+        Stream? requestBody = await GetRequestBodyAsStreamAsync(requestMessage, cancellationToken);
+        IJSStreamReference? result = await _accessorJsRef.Value.InvokeAsync<IJSStreamReference>("get", requestMessage.RequestUri, requestMethod, requestBody);
+        await using Stream stream = await result.OpenReadStreamAsync();
+        MemoryStream ms = new MemoryStream();
+        await stream.CopyToAsync(ms);
+
+        return ms;
     }
 
     private async Task WaitForReference(CancellationToken cancellationToken)
@@ -43,7 +56,7 @@ public class CacheStorageAccessor : IStorageAccessor
         }
     }
 
-    private static async Task<string> GetRequestBodyAsync(HttpRequestMessage requestMessage, CancellationToken cancellationToken)
+    private static async Task<string> GetRequestBodyAsStringAsync(HttpRequestMessage requestMessage, CancellationToken cancellationToken)
     {
         string requestBody = string.Empty;
 
@@ -53,5 +66,14 @@ public class CacheStorageAccessor : IStorageAccessor
         }
 
         return requestBody;
+    }
+
+    private static async Task<Stream?> GetRequestBodyAsStreamAsync(HttpRequestMessage requestMessage, CancellationToken cancellationToken)
+    {
+        if (requestMessage.Content is null)
+        {
+            return null;
+        }
+        return await requestMessage.Content.ReadAsStreamAsync();
     }
 }
