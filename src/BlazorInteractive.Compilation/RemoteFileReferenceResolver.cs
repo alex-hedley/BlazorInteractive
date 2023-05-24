@@ -31,6 +31,7 @@ public class RemoteFileReferenceResolver : IReferenceResolver
         return assemblies.Match<ReferenceResult>(
             assemblies => {
                 return assemblies
+                        //TODO: Localtion doesn't exist on files loaded from cachestorage in blazor
                     .Select(a => MetadataReference.CreateFromFile(a.Location))
                     .Cast<MetadataReference>()
                     .ToList()
