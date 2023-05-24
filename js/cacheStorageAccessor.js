@@ -42,6 +42,25 @@ export async function get(url, method, body = "") {
     return result;
 }
 
+export async function getBase64AsBytes(url, method, body = "") {
+    let cache = await openCacheStorage();
+    let request = createRequest(url, method, body);
+    let response = await cache.match(request);
+    
+    if (response == undefined) {
+        return btoa([]);
+    }
+
+    let result = await response.arrayBuffer();
+    
+    // https://stackoverflow.com/a/42334410
+    const base64String = btoa(
+        new Uint8Array(result)
+            .reduce((data, byte) => data + String.fromCharCode(byte), '')
+    );    
+    return base64String;
+}
+
 export async function remove(url, method, body = "") {
     let cache = await openCacheStorage();
     let request = createRequest(url, method, body);
