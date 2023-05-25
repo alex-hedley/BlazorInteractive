@@ -6,7 +6,7 @@ using BlazorInteractive.Compilation;
 
 namespace BlazorInteractive.AssemblyCompilation;
 
-public class BlazorAssemblyAccessor : IAssemblyAccessor
+public class BlazorAssemblyAccessor : IAssemblyAccessor<byte[]>
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger _logger;
@@ -19,7 +19,7 @@ public class BlazorAssemblyAccessor : IAssemblyAccessor
         _storageAccessor = storageAccessor;
     }
 
-    public async Task<AssemblyResult> GetAsync(CancellationToken cancellationToken)
+    public async Task<AssemblyResult<byte[]>> GetAsync(IEnumerable<string> importNames, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -44,14 +44,12 @@ public class BlazorAssemblyAccessor : IAssemblyAccessor
                 return new Failure("No Assemblies found in blazor.boot.json");
             }
 
-            var assemblies = new List<Assembly>();
-            foreach(var assemblyName in bootstrap.Assemblies())
+            var assemblies = new List<byte[]>();
+            foreach(var assemblyName in bootstrap.Assemblies(importNames))
             {
                 var message = new HttpRequestMessage(HttpMethod.Get, $"_framework/{assemblyName}");
                 var assemblyAsBytes = await _storageAccessor.GetAsBytesAsync(message);
-                
-                Assembly assembly = LoadFromStream(assemblyAsBytes);
-                assemblies.Add(assembly);
+                assemblies.Add(assemblyAsBytes);
             }
             return assemblies.AsReadOnly();
         }
@@ -60,14 +58,5 @@ public class BlazorAssemblyAccessor : IAssemblyAccessor
             return new Failure(ex, $"{ex.Message}");
         }
 
-    }
-
-    private static Assembly LoadFromStream(byte[] assemblySource)
-    {
-        if (AssemblyLoadContext.Default is not null)
-        {
-            return AssemblyLoadContext.Default.LoadFromStream(new MemoryStream(assemblySource));
-        }
-        return Assembly.Load(assemblySource);
     }
 }

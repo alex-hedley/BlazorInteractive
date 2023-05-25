@@ -1,13 +1,14 @@
 using Microsoft.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.Loader;
 
 namespace BlazorInteractive.Compilation;
 
 public class LocalFileReferenceResolver : IReferenceResolver
 {
-    private readonly IAssemblyAccessor _assemblyAccessor;
+    private readonly IAssemblyAccessor<Assembly> _assemblyAccessor;
 
-    public LocalFileReferenceResolver(IAssemblyAccessor assemblyAccessor)
+    public LocalFileReferenceResolver(IAssemblyAccessor<Assembly> assemblyAccessor)
     {
         _assemblyAccessor = assemblyAccessor;
     }
@@ -22,7 +23,7 @@ public class LocalFileReferenceResolver : IReferenceResolver
         
         try
         {    
-            AssemblyResult assembliesResult = await _assemblyAccessor.GetAsync(cancellationToken);
+            AssemblyResult<Assembly> assembliesResult = await _assemblyAccessor.GetAsync(importNames, cancellationToken);
 
             result = assembliesResult
                 .Match<ReferenceResult>(

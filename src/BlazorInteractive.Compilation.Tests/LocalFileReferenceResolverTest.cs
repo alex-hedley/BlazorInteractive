@@ -12,7 +12,7 @@ using static BlazorInteractive.Compilation.Tests.LocalFileReferenceResolverTestD
 public class LocalFileReferenceResolverTest
 {
     private static IEnumerable<Assembly> _appDomainAssemblies;
-    private readonly Mock<IAssemblyAccessor> _assemblyAccessor;
+    private readonly Mock<IAssemblyAccessor<Assembly>> _assemblyAccessor;
     private readonly CancellationToken _defaultCancellationToken;
     private readonly Mock<IStorageAccessor> _storageAccessor;
 
@@ -27,7 +27,7 @@ public class LocalFileReferenceResolverTest
 
     public LocalFileReferenceResolverTest()
     {
-        _assemblyAccessor = new Mock<IAssemblyAccessor>();
+        _assemblyAccessor = new Mock<IAssemblyAccessor<Assembly>>();
         _defaultCancellationToken = CancellationToken.None;
         _storageAccessor = new Mock<IStorageAccessor>();
         _localFileReferenceResolver = new LocalFileReferenceResolver(_assemblyAccessor.Object);
@@ -37,7 +37,7 @@ public class LocalFileReferenceResolverTest
     [Fact]
     public async Task ResolveAsync_WithDefaultAssemblies_ReturnsItems()
     {
-        _assemblyAccessor.Setup(a => a.GetAsync(_defaultCancellationToken)).ReturnsAsync(_appDomainAssemblies.ToList().AsReadOnly());
+        _assemblyAccessor.Setup(a => a.GetAsync(_defaultAssemblyNames, _defaultCancellationToken)).ReturnsAsync(_appDomainAssemblies.ToList().AsReadOnly());
 
         var result = await _localFileReferenceResolver.ResolveAsync(_defaultAssemblyNames);
         result.Value.Should().NotBeNull();
@@ -53,7 +53,7 @@ public class LocalFileReferenceResolverTest
         badAssembly.Setup(m => m.Location).Returns(InvalidAssembly);
         
         var assemblies = new [] { badAssembly.Object }.ToList().AsReadOnly();
-        _assemblyAccessor.Setup(a => a.GetAsync(_defaultCancellationToken)).ReturnsAsync(assemblies);
+        _assemblyAccessor.Setup(a => a.GetAsync(_defaultAssemblyNames, _defaultCancellationToken)).ReturnsAsync(assemblies);
         
         var baseAssemblies = new List<Assembly> { badAssembly.Object };
         var baseAssemblyNames = baseAssemblies.Select(a => a.FullName).Where(s => s is not null);
@@ -67,7 +67,7 @@ public class LocalFileReferenceResolverTest
     public async Task ResolveAsync_WithGetAssemblyFailure_ReturnsFailure()
     {
         AppDomainAssemblyException exception = new AppDomainAssemblyException();
-        _assemblyAccessor.Setup(a => a.GetAsync(_defaultCancellationToken)).ReturnsAsync(new Failure(exception, exception.Message));
+        _assemblyAccessor.Setup(a => a.GetAsync(_defaultAssemblyNames, _defaultCancellationToken)).ReturnsAsync(new Failure(exception, exception.Message));
         
         var result = await _localFileReferenceResolver.ResolveAsync(_defaultAssemblyNames);
         result.Value.Should().BeOfType<Failure>();
@@ -88,7 +88,7 @@ public class LocalFileReferenceResolverTest
     [Fact]
     public async Task ResolveAsync_WithGetAssemblyCancelled_ReturnsCancelled()
     {
-        _assemblyAccessor.Setup(a => a.GetAsync(_defaultCancellationToken)).ReturnsAsync(new Cancelled());
+        _assemblyAccessor.Setup(a => a.GetAsync(_defaultAssemblyNames, _defaultCancellationToken)).ReturnsAsync(new Cancelled());
 
         var result = await _localFileReferenceResolver.ResolveAsync(_defaultAssemblyNames, _defaultCancellationToken);
 

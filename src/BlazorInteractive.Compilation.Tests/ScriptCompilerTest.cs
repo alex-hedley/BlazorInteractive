@@ -9,7 +9,7 @@ namespace BlazorInteractive.Compilation.Tests;
 
 public class ScriptCompilerTest
 {
-    private readonly Mock<IAssemblyAccessor> _assemblyAccessor;
+    private readonly Mock<IAssemblyAccessor<Assembly>> _assemblyAccessor;
     private readonly CancellationToken _defaultCancellationToken;
     private readonly ScriptCompiler _compiler;
     private readonly List<string> _defaultImports;
@@ -24,11 +24,11 @@ public class ScriptCompilerTest
     
     public ScriptCompilerTest()
     {
-        _assemblyAccessor = new Mock<IAssemblyAccessor>();
-        _assemblyAccessor.Setup(a => a.GetAsync(_defaultCancellationToken)).ReturnsAsync(_appDomainAssemblies.ToList().AsReadOnly());
+        _defaultImports = new List<string>() { "System" };
+        _assemblyAccessor = new Mock<IAssemblyAccessor<Assembly>>();
+        _assemblyAccessor.Setup(a => a.GetAsync(_defaultImports, _defaultCancellationToken)).ReturnsAsync(_appDomainAssemblies.ToList().AsReadOnly());
         _defaultCancellationToken = CancellationToken.None;
         _compiler = new ScriptCompiler(new LocalFileReferenceResolver(_assemblyAccessor.Object));
-        _defaultImports = new List<string>() { "System" };
         _sourceCode = "Console.WriteLine(\"Hello, World!\");";
     }
 

@@ -13,14 +13,14 @@ namespace BlazorInteractive.Compilation.Tests;
 
 public class RemoteFileReferenceResolverTest
 {
-    private readonly Mock<IAssemblyAccessor> _assemblyAccessor;
+    private readonly Mock<IAssemblyAccessor<byte[]>> _assemblyAccessor;
     // private readonly CancellationToken _defaultCancellationToken;
 
     private Mock<IStorageAccessor> _storageAccessor;
 
     public RemoteFileReferenceResolverTest()
     {
-        _assemblyAccessor = new Mock<IAssemblyAccessor>();
+        _assemblyAccessor = new Mock<IAssemblyAccessor<byte[]>>();
         // _defaultCancellationToken = CancellationToken.None;
         _storageAccessor = new Mock<IStorageAccessor>();
     }
@@ -52,8 +52,7 @@ public class RemoteFileReferenceResolverTest
                 return response;
             });
 
-        var httpClient = CreateHttpClient(BaseAddress, mockMessageHandler.Object);
-        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(_assemblyAccessor.Object, httpClient, _storageAccessor.Object);
+        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(_assemblyAccessor.Object);
 
         var result = await remoteFileReferenceResolver.ResolveAsync(new [] { assemblyName });
         result.Value.Should().NotBeNull();
@@ -69,7 +68,7 @@ public class RemoteFileReferenceResolverTest
         badAssembly.Setup(m => m.Location).Returns(InvalidAssembly);
 
         var baseAssemblies = new List<Assembly> { badAssembly.Object };
-        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(_assemblyAccessor.Object, CreateHttpClient(BaseAddress), _storageAccessor.Object);
+        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(_assemblyAccessor.Object);
         var baseAssemblyNames = baseAssemblies.Select(a => a.FullName);
 
         var result = await remoteFileReferenceResolver.ResolveAsync(baseAssemblyNames);
@@ -85,7 +84,7 @@ public class RemoteFileReferenceResolverTest
         var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
 
-        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(_assemblyAccessor.Object, CreateHttpClient(BaseAddress), _storageAccessor.Object);
+        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(_assemblyAccessor.Object);
 
         cancellationTokenSource.Cancel();
         var result = await remoteFileReferenceResolver.ResolveAsync(new[] { SystemAssembly }, cancellationToken);

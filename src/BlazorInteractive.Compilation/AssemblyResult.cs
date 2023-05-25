@@ -6,4 +6,4 @@ using OneOf;
 namespace BlazorInteractive.Compilation;
 
 [GenerateOneOf]
-public partial class AssemblyResult : OneOfBase<ReadOnlyCollection<Assembly>, Failure, Cancelled> { }
+public partial class AssemblyResult<TAssembly> : OneOfBase<ReadOnlyCollection<TAssembly>, Failure, Cancelled> { }

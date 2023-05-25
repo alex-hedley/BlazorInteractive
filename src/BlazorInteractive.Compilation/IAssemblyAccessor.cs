@@ -1,9 +1,7 @@
 
 namespace BlazorInteractive.Compilation;
 
-public interface IAssemblyAccessor
+public interface IAssemblyAccessor<TAssembly>
 {
-    Task<AssemblyResult> GetAsync(CancellationToken cancellationToken);
-
-    // Task<AssemblyResult> GetAsync(IEnumerable<string> importNames, CancellationToken cancellationToken);
+    Task<AssemblyResult<TAssembly>> GetAsync(IEnumerable<string> importNames, CancellationToken cancellationToken);
 }
