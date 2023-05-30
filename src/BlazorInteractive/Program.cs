@@ -10,9 +10,10 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped<ScriptCompiler>();
+builder.Services.AddScoped<ICompiler, CodeCompiler>();
 builder.Services.AddScoped<IReferenceResolver, RemoteFileReferenceResolver>();
 builder.Services.AddScoped<IStorageAccessor, CacheStorageAccessor>();
+builder.Services.AddScoped<IAssemblyInvoker, AssemblyInvoker>();
 
 builder.Services.AddHttpClient<IAssemblyAccessor<ImmutableArray<byte>>, BlazorAssemblyAccessor>(client => {
     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);

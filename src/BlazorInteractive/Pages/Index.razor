@@ -4,7 +4,9 @@
 @using BlazorInteractive.Components.Output
 
 @page "/"
-@inject ScriptCompiler ScriptCompiler
+
+@inject ICompiler CodeCompiler
+@inject IAssemblyInvoker AssemblyInvoker
 
 <PageTitle>Index</PageTitle>
 
@@ -27,18 +29,49 @@
 
     private async Task OnCompileAsync(string editorText)
     {
+        const string sourceCodeFormat = @"
+        using System;
+
+        namespace BlazorInteractive
+        {{
+            public class Program
+            {{
+                public string Main()
+                {{
+                    {0}
+                    return ""Hello, World!"";
+                }}
+            }}
+        }}
+        ";
+
+        string sourceCode = string.Format(sourceCodeFormat, editorText);
+
         var imports = Assembly.GetEntryAssembly()?.GetReferencedAssemblies().Select(o => Assembly.Load(o)).ToList();
         imports.Add(typeof(object).Assembly);
         imports.Add(typeof(Console).Assembly);
         imports.Add(typeof(Enumerable).Assembly);
 
         var importNames = imports.Select(a => a.GetName().Name!).ToList();
-        CompilationResult compilationResult = await ScriptCompiler.CompileAsync(editorText, importNames); // new[] { "System.dll" }
-        //Can't create a metadata reference to an assembly without location.
+        CompilationResult compilationResult = await CodeCompiler.CompileAsync(sourceCode, importNames);
+
+        //Type type = scriptAssembly.GetType("RoslynCompileSample.Writer");
+        //// create an instance
+        //object obj = Activator.CreateInstance(type);
+        //// call our test function
+        //_returnValue = (string)type.InvokeMember("Write", BindingFlags.Default | BindingFlags.InvokeMethod, null, obj, new object[] { "Hello World" });
+
+        // // Grab any Console info.
+        // var defaultWriter = Console.Out;
+        // using var writer = new StringWriter();
+        // Console.SetOut(writer);
+        // var result = writer.ToString();
+        // Console.SetOut(defaultWriter);
+
         output = compilationResult.Match(
-            success => {
+            assembly => {
                 outputClass = "success";
-                return success.Value;
+                return AssemblyInvoker.Invoke(assembly, "BlazorInteractive.Program", "Main");
             },
             @void => {
                 outputClass = "";

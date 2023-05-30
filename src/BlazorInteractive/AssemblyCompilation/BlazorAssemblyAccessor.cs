@@ -20,7 +20,7 @@ public class BlazorAssemblyAccessor : IAssemblyAccessor<ImmutableArray<byte>>
     public async Task<AssemblyResult<ImmutableArray<byte>>> GetAsync(IEnumerable<string> importNames, CancellationToken cancellationToken)
     {
         _logger.LogInformation("ImportNames total {Count}", importNames.Count());
-        
+
         if (cancellationToken.IsCancellationRequested)
         {
             return new Cancelled();
