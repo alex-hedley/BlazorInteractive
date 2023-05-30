@@ -62,9 +62,6 @@ public class BlazorAssemblyAccessor : IAssemblyAccessor<ImmutableArray<byte>>
                     var assemblyBytes = await assemblyResponse.Content.ReadAsByteArrayAsync();
                     if (assemblyBytes is null) continue;
                     var assemblyArray = ImmutableArray.Create(assemblyBytes);
-
-                    var reference = MetadataReference.CreateFromImage(assemblyArray);
-
                     assemblies.Add(assemblyArray);
                     _logger.LogInformation("Added to Assemblies list");
                 }
@@ -73,7 +70,7 @@ public class BlazorAssemblyAccessor : IAssemblyAccessor<ImmutableArray<byte>>
                     _logger.LogInformation("🔴 Failed");
                 }
             }
-            return new List<ImmutableArray<byte>>().AsReadOnly();
+            return assemblies.AsReadOnly();
         }
         catch (Exception ex)
         {

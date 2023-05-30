@@ -33,10 +33,7 @@ public class RemoteFileReferenceResolver : IReferenceResolver
         return assemblyBytes.Match<ReferenceResult>(
             assemblies => {
                 return assemblies
-                    .Select(a =>
-                    {
-                        return MetadataReference.CreateFromImage(a);
-                    })
+                    .Select(a => MetadataReference.CreateFromImage(a))
                     .Cast<MetadataReference>()
                     .ToList()
                     .AsReadOnly();
