@@ -49,3 +49,20 @@ foreach(var assemblyName in bootstrap.Assemblies())
 **Error message**
 
 > Bad IL Format.
+
+---
+
+> Importing a module script failed. undefined
+
+Updated js path in [CacheStorageAccessor.cs](../src/BlazorInteractive/AssemblyCompilation/CacheStorageAccessor.cs).
+
+> The value cannot be an empty string. (Parameter 'path')
+
+
+---
+
+> Failed to fetch dynamically imported module: https://alex-hedley.github.io/js/cacheStorageAccessor.js TypeError: Failed to fetch dynamically imported module: https://alex-hedley.github.io/js/cacheStorageAccessor.js
+
+---
+
+(Can't create a metadata reference to an assembly without location.)

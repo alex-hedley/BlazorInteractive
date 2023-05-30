@@ -11,9 +11,9 @@ public sealed record BootstrapInfo
 
         if (filter is not null)
         {
-            query = query.Where(a => filter.Contains(a.Key));
+            query = query.Where(a => filter.Select(a => $"{a}.dll").Contains(a.Key));
         }
-        
-        return query.Select(a => $"{a.Key}.{a.Value}");
+
+        return query.Select(a => a.Key);
     }
 }

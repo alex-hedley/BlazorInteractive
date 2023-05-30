@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using System.Collections.Immutable;
 
 using BlazorInteractive;
 using BlazorInteractive.AssemblyCompilation;
@@ -13,7 +14,7 @@ builder.Services.AddScoped<ScriptCompiler>();
 builder.Services.AddScoped<IReferenceResolver, RemoteFileReferenceResolver>();
 builder.Services.AddScoped<IStorageAccessor, CacheStorageAccessor>();
 
-builder.Services.AddHttpClient<IAssemblyAccessor<byte[]>, BlazorAssemblyAccessor>(client => {
+builder.Services.AddHttpClient<IAssemblyAccessor<ImmutableArray<byte>>, BlazorAssemblyAccessor>(client => {
     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
 });
 

@@ -1,5 +1,8 @@
-﻿@using BlazorInteractive.Components.Editor
+﻿@using System.Reflection;
+
+@using BlazorInteractive.Components.Editor
 @using BlazorInteractive.Components.Output
+
 @page "/"
 @inject ScriptCompiler ScriptCompiler
 
@@ -24,7 +27,13 @@
 
     private async Task OnCompileAsync(string editorText)
     {
-        CompilationResult compilationResult = await ScriptCompiler.CompileAsync(editorText, new[] { "System.dll" });
+        var imports = Assembly.GetEntryAssembly()?.GetReferencedAssemblies().Select(o => Assembly.Load(o)).ToList();
+        imports.Add(typeof(object).Assembly);
+        imports.Add(typeof(Console).Assembly);
+        imports.Add(typeof(Enumerable).Assembly);
+
+        var importNames = imports.Select(a => a.GetName().Name!).ToList();
+        CompilationResult compilationResult = await ScriptCompiler.CompileAsync(editorText, importNames); // new[] { "System.dll" }
         //Can't create a metadata reference to an assembly without location.
         output = compilationResult.Match(
             success => {

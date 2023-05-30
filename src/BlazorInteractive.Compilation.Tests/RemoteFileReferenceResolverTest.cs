@@ -1,6 +1,7 @@
-
 using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.Logging;
 using System.Collections;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Reflection;
@@ -13,14 +14,15 @@ namespace BlazorInteractive.Compilation.Tests;
 
 public class RemoteFileReferenceResolverTest
 {
-    private readonly Mock<IAssemblyAccessor<byte[]>> _assemblyAccessor;
+    private readonly Mock<ILogger<RemoteFileReferenceResolver>> _logger;
+    private readonly Mock<IAssemblyAccessor<ImmutableArray<byte>>> _assemblyAccessor;
     // private readonly CancellationToken _defaultCancellationToken;
 
     private Mock<IStorageAccessor> _storageAccessor;
 
     public RemoteFileReferenceResolverTest()
     {
-        _assemblyAccessor = new Mock<IAssemblyAccessor<byte[]>>();
+        _assemblyAccessor = new Mock<IAssemblyAccessor<ImmutableArray<byte>>>();
         // _defaultCancellationToken = CancellationToken.None;
         _storageAccessor = new Mock<IStorageAccessor>();
     }
@@ -52,7 +54,7 @@ public class RemoteFileReferenceResolverTest
                 return response;
             });
 
-        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(_assemblyAccessor.Object);
+        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(_assemblyAccessor.Object, _logger.Object);
 
         var result = await remoteFileReferenceResolver.ResolveAsync(new [] { assemblyName });
         result.Value.Should().NotBeNull();
@@ -68,7 +70,7 @@ public class RemoteFileReferenceResolverTest
         badAssembly.Setup(m => m.Location).Returns(InvalidAssembly);
 
         var baseAssemblies = new List<Assembly> { badAssembly.Object };
-        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(_assemblyAccessor.Object);
+        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(_assemblyAccessor.Object, _logger.Object);
         var baseAssemblyNames = baseAssemblies.Select(a => a.FullName);
 
         var result = await remoteFileReferenceResolver.ResolveAsync(baseAssemblyNames);
@@ -84,7 +86,7 @@ public class RemoteFileReferenceResolverTest
         var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
 
-        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(_assemblyAccessor.Object);
+        var remoteFileReferenceResolver = new RemoteFileReferenceResolver(_assemblyAccessor.Object, _logger.Object);
 
         cancellationTokenSource.Cancel();
         var result = await remoteFileReferenceResolver.ResolveAsync(new[] { SystemAssembly }, cancellationToken);

@@ -1,26 +1,26 @@
-using System.Reflection;
-using System.Runtime.Loader;
+using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
 using System.Text.Json;
 
 using BlazorInteractive.Compilation;
 
 namespace BlazorInteractive.AssemblyCompilation;
 
-public class BlazorAssemblyAccessor : IAssemblyAccessor<byte[]>
+public class BlazorAssemblyAccessor : IAssemblyAccessor<ImmutableArray<byte>>
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger _logger;
-    private readonly IStorageAccessor _storageAccessor;
 
-    public BlazorAssemblyAccessor(HttpClient httpClient, ILogger<BlazorAssemblyAccessor> logger, IStorageAccessor storageAccessor)
+    public BlazorAssemblyAccessor(HttpClient httpClient, ILogger<BlazorAssemblyAccessor> logger)
     {
         _httpClient = httpClient;
         _logger = logger;
-        _storageAccessor = storageAccessor;
     }
 
-    public async Task<AssemblyResult<byte[]>> GetAsync(IEnumerable<string> importNames, CancellationToken cancellationToken)
+    public async Task<AssemblyResult<ImmutableArray<byte>>> GetAsync(IEnumerable<string> importNames, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("ImportNames total {Count}", importNames.Count());
+        
         if (cancellationToken.IsCancellationRequested)
         {
             return new Cancelled();
@@ -44,19 +44,40 @@ public class BlazorAssemblyAccessor : IAssemblyAccessor<byte[]>
                 return new Failure("No Assemblies found in blazor.boot.json");
             }
 
-            var assemblies = new List<byte[]>();
-            foreach(var assemblyName in bootstrap.Assemblies(importNames))
+            _logger.LogInformation("Assemblies total {Count}", bootstrap.Assemblies().Count());
+
+            var assemblies = new List<ImmutableArray<byte>>();
+
+            var filteredAssemblies = bootstrap.Assemblies(importNames);
+            _logger.LogInformation("Filtered assemblies total {Count}", filteredAssemblies.Count());
+
+            foreach(var assemblyName in filteredAssemblies)
             {
-                var message = new HttpRequestMessage(HttpMethod.Get, $"_framework/{assemblyName}");
-                var assemblyAsBytes = await _storageAccessor.GetAsBytesAsync(message);
-                assemblies.Add(assemblyAsBytes);
+                var assemblyUrl = $"./_framework/{assemblyName}";
+                _logger.LogInformation($"Loading DLL from {assemblyUrl}");
+                var assemblyResponse = await _httpClient.GetAsync(assemblyUrl);
+                if (assemblyResponse.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation("🟢 Success");
+                    var assemblyBytes = await assemblyResponse.Content.ReadAsByteArrayAsync();
+                    if (assemblyBytes is null) continue;
+                    var assemblyArray = ImmutableArray.Create(assemblyBytes);
+
+                    var reference = MetadataReference.CreateFromImage(assemblyArray);
+
+                    assemblies.Add(assemblyArray);
+                    _logger.LogInformation("Added to Assemblies list");
+                }
+                else
+                {
+                    _logger.LogInformation("🔴 Failed");
+                }
             }
-            return assemblies.AsReadOnly();
+            return new List<ImmutableArray<byte>>().AsReadOnly();
         }
         catch (Exception ex)
         {
             return new Failure(ex, $"{ex.Message}");
         }
-
     }
 }
