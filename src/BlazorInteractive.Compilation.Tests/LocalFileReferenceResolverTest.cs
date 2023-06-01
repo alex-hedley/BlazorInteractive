@@ -51,14 +51,14 @@ public class LocalFileReferenceResolverTest
         badAssembly.Setup(m => m.FullName).Returns(InvalidAssembly);
         badAssembly.Setup(m => m.IsDynamic).Returns(false);
         badAssembly.Setup(m => m.Location).Returns(InvalidAssembly);
-        
-        var assemblies = new [] { badAssembly.Object }.ToList().AsReadOnly();
-        _assemblyAccessor.Setup(a => a.GetAsync(_defaultAssemblyNames, _defaultCancellationToken)).ReturnsAsync(assemblies);
-        
+
         var baseAssemblies = new List<Assembly> { badAssembly.Object };
         var baseAssemblyNames = baseAssemblies.Select(a => a.FullName).Where(s => s is not null);
-        
-        var result = await _localFileReferenceResolver.ResolveAsync(baseAssemblyNames!);
+
+        var assemblies = new [] { badAssembly.Object }.ToList().AsReadOnly();
+        _assemblyAccessor.Setup(a => a.GetAsync(baseAssemblyNames!, _defaultCancellationToken)).ReturnsAsync(assemblies);
+
+        var result = await _localFileReferenceResolver.ResolveAsync(baseAssemblyNames!, _defaultCancellationToken);
         result.Value.Should().BeOfType<Failure>();
         result.Value.As<Failure>().Exception.Should().BeOfType<FileNotFoundException>();
     }

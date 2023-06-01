@@ -7,10 +7,15 @@ using BlazorInteractive.Compilation;
 
 namespace BlazorInteractive.Compilation.Tests;
 
+using static BlazorInteractive.Compilation.Tests.CodeCompilerTestData;
+
 public class CodeCompilerTest
 {
     private readonly Mock<ILogger<CodeCompiler>> _logger;
     private readonly Mock<IAssemblyAccessor<Assembly>> _assemblyAccessor;
+    private readonly Mock<IReferenceResolver> _referenceResolver;
+    private readonly Mock<ICSharpCompiler> _cSharpCompiler;
+    private readonly Mock<IAssemblyLoader> _assemblyLoader;
     private readonly CancellationToken _defaultCancellationToken;
     private readonly CodeCompiler _compiler;
     private readonly List<string> _defaultImports;
@@ -25,17 +30,75 @@ public class CodeCompilerTest
     
     public CodeCompilerTest()
     {
-        _defaultImports = new List<string>() { "System" };
+        _defaultImports = new List<string>() { SystemAssembly };
         _assemblyAccessor = new Mock<IAssemblyAccessor<Assembly>>();
         _assemblyAccessor.Setup(a => a.GetAsync(_defaultImports, _defaultCancellationToken)).ReturnsAsync(_appDomainAssemblies.ToList().AsReadOnly());
         _defaultCancellationToken = CancellationToken.None;
+        _logger = new Mock<ILogger<CodeCompiler>>();
+        _cSharpCompiler = new Mock<ICSharpCompiler>();
+        _assemblyLoader = new Mock<IAssemblyLoader>();
         
         _sourceCode = "Console.WriteLine(\"Hello, World!\");";
-        // _compiler = new CodeCompiler(_logger, _referenceResolver);
-        
-        //_sourceCode, _defaultImports
+
+        _referenceResolver = new Mock<IReferenceResolver>();
+        _compiler = new CodeCompiler(_logger.Object, _referenceResolver.Object, _cSharpCompiler.Object, _assemblyLoader.Object);
     }
 
-    // [Fact]
+    [Fact]
+    public async Task CompileAsync_WithCode_ReturnsSuccessWithResult()
+    {
+        var sourceCode = "1 + 1";
+        var result = await _compiler.CompileAsync(sourceCode, _defaultImports);
+        result.Value.Should().Be(new Success("Hello, World!"));
+    }
 
+    [Fact]
+    public async Task CompileAsync_WithCodeWithNoResult_ReturnsVoid()
+    {
+        var result = await _compiler.CompileAsync(_sourceCode, _defaultImports);
+        result.Value.Should().BeOfType<Void>();
+    }
+
+    [Fact]
+    public async Task CompileAsync_WithoutSourceCode_ReturnFailure()
+    {
+        var sourceCode = String.Empty;
+        
+        var result = await _compiler.CompileAsync(sourceCode, _defaultImports);
+        result.Value.Should().BeOfType<Failure>();
+    }
+
+    [Fact]
+    public async Task CompileAsync_WithoutImports_ReturnFailure()
+    {
+        List<string> imports = new List<string>();
+        
+        var result = await _compiler.CompileAsync(_sourceCode, imports);
+        result.Value.Should().BeOfType<Failure>();
+    }
+
+    [Fact]
+    public async Task CompileAsync_WithCancellationToken_ReturnsCancelled()
+    {
+        var cancellationTokenSource = new CancellationTokenSource();
+        var cancellationToken = cancellationTokenSource.Token;
+        
+        cancellationTokenSource.Cancel();
+        var result = await _compiler.CompileAsync(_sourceCode, _defaultImports, cancellationToken);
+        result.Value.Should().BeOfType<Cancelled>();
+    }
+    
+    [Fact]
+    public async Task CompileAsync_WithBadCode_ThrowsCompilationErrorException()
+    {
+        var sourceCode = "lolCat";
+        var result = await _compiler.CompileAsync(sourceCode, _defaultImports);
+
+        result.Value.As<Failure>();
+    }
+}
+
+public class CodeCompilerTestData
+{
+    public const string SystemAssembly = "System";
 }

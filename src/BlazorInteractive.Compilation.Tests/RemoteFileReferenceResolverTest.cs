@@ -16,14 +16,15 @@ public class RemoteFileReferenceResolverTest
 {
     private readonly Mock<ILogger<RemoteFileReferenceResolver>> _logger;
     private readonly Mock<IAssemblyAccessor<ImmutableArray<byte>>> _assemblyAccessor;
-    // private readonly CancellationToken _defaultCancellationToken;
+    private readonly CancellationToken _defaultCancellationToken;
 
     private Mock<IStorageAccessor> _storageAccessor;
 
     public RemoteFileReferenceResolverTest()
     {
         _assemblyAccessor = new Mock<IAssemblyAccessor<ImmutableArray<byte>>>();
-        // _defaultCancellationToken = CancellationToken.None;
+        _defaultCancellationToken = CancellationToken.None;
+        _logger = new Mock<ILogger<RemoteFileReferenceResolver>>();
         _storageAccessor = new Mock<IStorageAccessor>();
     }
 
@@ -32,31 +33,15 @@ public class RemoteFileReferenceResolverTest
     public async Task ResolveAsync_WithDefaultAssemblies_ReturnsItems(string assemblyName)
     {
         Assembly assembly = Assembly.Load(assemblyName);
-        using var fileStream = File.OpenRead(assembly.Location);
+        var assemblyBytes = File.ReadAllBytes(assembly.Location);
+        var assemblyImmutableBytes = ImmutableArray.Create(assemblyBytes);
+        var readonlyList = new ReadOnlyCollection<ImmutableArray<byte>>(new List<ImmutableArray<byte>> { assemblyImmutableBytes } );
 
-        var mockMessageHandler = new Mock<HttpMessageHandler>();
-        mockMessageHandler.Protected().Setup<Task<HttpResponseMessage>>(
-            "SendAsync",
-            ItExpr.IsAny<HttpRequestMessage>(),
-            ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync((HttpRequestMessage request, CancellationToken _) =>
-            {
-                HttpResponseMessage response = new()
-                {
-                    StatusCode = HttpStatusCode.OK
-                };
-                var length = fileStream.Length.ToString();
-                var streamContent = new StreamContent(fileStream);
-                streamContent.Headers.Add("Content-Type", "application/octet-stream");
-                streamContent.Headers.Add("Content-Length", length);
-                response.Content = streamContent;
-
-                return response;
-            });
+        _assemblyAccessor.Setup(a => a.GetAsync(new[] { assemblyName }, _defaultCancellationToken)).ReturnsAsync(readonlyList);
 
         var remoteFileReferenceResolver = new RemoteFileReferenceResolver(_assemblyAccessor.Object, _logger.Object);
 
-        var result = await remoteFileReferenceResolver.ResolveAsync(new [] { assemblyName });
+        var result = await remoteFileReferenceResolver.ResolveAsync(new [] { assemblyName }, _defaultCancellationToken);
         result.Value.Should().NotBeNull();
         result.Value.As<ReadOnlyCollection<MetadataReference>>().Should().NotBeEmpty();
     }
@@ -64,25 +49,16 @@ public class RemoteFileReferenceResolverTest
     [Fact]
     public async Task ResolveAsync_WithBadAssembly_ReturnsFailure()
     {
-        var badAssembly = new Mock<Assembly>();
-        badAssembly.Setup(m => m.FullName).Returns(InvalidAssembly);
-        badAssembly.Setup(m => m.IsDynamic).Returns(false);
-        badAssembly.Setup(m => m.Location).Returns(InvalidAssembly);
-
-        var baseAssemblies = new List<Assembly> { badAssembly.Object };
+        _assemblyAccessor.Setup(a => a.GetAsync(new [] { InvalidAssembly }, _defaultCancellationToken)).ReturnsAsync(new Failure(string.Empty));
         var remoteFileReferenceResolver = new RemoteFileReferenceResolver(_assemblyAccessor.Object, _logger.Object);
-        var baseAssemblyNames = baseAssemblies.Select(a => a.FullName);
 
-        var result = await remoteFileReferenceResolver.ResolveAsync(baseAssemblyNames);
-
+        var result = await remoteFileReferenceResolver.ResolveAsync(new [] { InvalidAssembly }, _defaultCancellationToken);
         result.Value.Should().BeOfType<Failure>();
-        result.Value.As<Failure>().Exception.Should().BeOfType<HttpRequestException>();
     }
 
     [Fact]
     public async Task ResolveAsync_WithCancellationToken_ReturnsCancelled()
     {
-        // Assembly assembly = Assembly.Load(SystemAssembly);
         var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
 
@@ -91,13 +67,6 @@ public class RemoteFileReferenceResolverTest
         cancellationTokenSource.Cancel();
         var result = await remoteFileReferenceResolver.ResolveAsync(new[] { SystemAssembly }, cancellationToken);
         result.Value.Should().BeOfType<Cancelled>();
-    }
-
-    private HttpClient CreateHttpClient(string baseAddress, HttpMessageHandler? handler = default)
-    {
-        var client = handler is null ? new HttpClient() : new HttpClient(handler);
-        client.BaseAddress = new Uri(baseAddress);
-        return client;
     }
 }
 
