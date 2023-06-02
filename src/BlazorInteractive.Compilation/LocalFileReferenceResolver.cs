@@ -30,8 +30,8 @@ public class LocalFileReferenceResolver : IReferenceResolver
                     assemblies => {
                         return assemblies
                             .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location))
-                            .Select(a => MetadataReference.CreateFromFile(a.Location))
-                            .Cast<MetadataReference>()
+                            .Select(a => new Reference(MetadataReference.CreateFromFile(a.Location)))
+                            .Cast<IReference>()
                             .ToList()
                             .AsReadOnly();
                     }, 

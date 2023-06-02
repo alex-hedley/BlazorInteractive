@@ -6,7 +6,7 @@ using BlazorInteractive.Compilation;
 
 public class CSharpCompiler : ICSharpCompiler
 {
-    public CSharpCompilationResult Compile(string sourceCode, string assemblyName, ReadOnlyCollection<MetadataReference> references)
+    public CSharpCompilationResult Compile(string sourceCode, string assemblyName, ReadOnlyCollection<IReference> references)
     {
         if (string.IsNullOrEmpty(sourceCode))
         {
@@ -24,7 +24,7 @@ public class CSharpCompiler : ICSharpCompiler
         CSharpCompilation compilation = CSharpCompilation.Create(
             assemblyName,
             syntaxTrees: new[] { parsedSyntaxTree },
-            references: references,
+            references: references.Select(r => r.Value),
             options: new CSharpCompilationOptions(
                 OutputKind.DynamicallyLinkedLibrary,
                 concurrentBuild: false,

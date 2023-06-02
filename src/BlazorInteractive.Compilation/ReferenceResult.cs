@@ -5,4 +5,4 @@ using OneOf;
 namespace BlazorInteractive.Compilation;
 
 [GenerateOneOf]
-public partial class ReferenceResult : OneOfBase<ReadOnlyCollection<MetadataReference>, Failure, Cancelled> { }
+public partial class ReferenceResult : OneOfBase<ReadOnlyCollection<IReference>, Failure, Cancelled> { }

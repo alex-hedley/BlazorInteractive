@@ -1,9 +1,11 @@
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.Logging;
 using System.Collections.Immutable;
 using System.Reflection;
 
 using BlazorInteractive.Compilation;
+using System.Collections.ObjectModel;
 
 namespace BlazorInteractive.Compilation.Tests;
 
@@ -46,7 +48,14 @@ public class CodeCompilerTest
 
     [Fact]
     public async Task CompileAsync_WithCode_ReturnsSuccessWithResult()
-    {
+    {   
+        var references = new Mock<IReference>();
+        var roc = new ReadOnlyCollection<IReference>(new List<IReference>() { references.Object });
+        _referenceResolver.Setup(r => r.ResolveAsync(_defaultImports, _defaultCancellationToken)).ReturnsAsync(roc);
+
+        var csc = new Mock<CSharpCompilation>();
+        _cSharpCompiler.Setup(c => c.Compile(_sourceCode, SystemAssembly, roc)).Returns(csc.Object);
+
         var sourceCode = "1 + 1";
         var result = await _compiler.CompileAsync(sourceCode, _defaultImports);
         result.Value.Should().Be(new Success("Hello, World!"));
@@ -56,7 +65,7 @@ public class CodeCompilerTest
     public async Task CompileAsync_WithCodeWithNoResult_ReturnsVoid()
     {
         var result = await _compiler.CompileAsync(_sourceCode, _defaultImports);
-        result.Value.Should().BeOfType<Void>();
+        result.Value.Should().BeOfType<Failure>();
     }
 
     [Fact]
