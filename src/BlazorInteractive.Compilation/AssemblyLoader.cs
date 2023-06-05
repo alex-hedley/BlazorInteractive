@@ -14,10 +14,10 @@ public class AssemblyLoader : IAssemblyLoader
         _logger = logger;
     }
 
-    public AssemblyLoaderResult Load(CSharpCompilation compilation)
+    public AssemblyLoaderResult Load(ICSharpCompilation compilation)
     {
         using var ms = new MemoryStream();
-        EmitResult result = compilation.Emit(ms);
+        EmitResult result = compilation.Value.Emit(ms);
         if (!result.Success)
         {
             IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>

@@ -20,18 +20,9 @@ public class CSharpCompiler : ICSharpCompiler
 
         var options = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Default);
         var parsedSyntaxTree = SyntaxFactory.ParseSyntaxTree(sourceCode, options);
-        
-        CSharpCompilation compilation = CSharpCompilation.Create(
-            assemblyName,
-            syntaxTrees: new[] { parsedSyntaxTree },
-            references: references.Select(r => r.Value),
-            options: new CSharpCompilationOptions(
-                OutputKind.DynamicallyLinkedLibrary,
-                concurrentBuild: false,
-                optimizationLevel: OptimizationLevel.Debug
-            )
-        );
 
-        return compilation;
+        ICSharpCompilationBuilder builder = new CSharpCompilationBuilder();
+        var compilation = builder.Create(assemblyName, new[] { parsedSyntaxTree }, references);
+        return new CSharpCompilationWrapper(compilation.Value);
     }
 }

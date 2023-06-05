@@ -2,10 +2,10 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.Logging;
 using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using System.Reflection;
 
 using BlazorInteractive.Compilation;
-using System.Collections.ObjectModel;
 
 namespace BlazorInteractive.Compilation.Tests;
 
@@ -39,7 +39,7 @@ public class CodeCompilerTest
         _logger = new Mock<ILogger<CodeCompiler>>();
         _cSharpCompiler = new Mock<ICSharpCompiler>();
         _assemblyLoader = new Mock<IAssemblyLoader>();
-        
+
         _sourceCode = "Console.WriteLine(\"Hello, World!\");";
 
         _referenceResolver = new Mock<IReferenceResolver>();
@@ -52,10 +52,11 @@ public class CodeCompilerTest
         var references = new Mock<IReference>();
         var roc = new ReadOnlyCollection<IReference>(new List<IReference>() { references.Object });
         _referenceResolver.Setup(r => r.ResolveAsync(_defaultImports, _defaultCancellationToken)).ReturnsAsync(roc);
-
-        var csc = new Mock<CSharpCompilation>();
-        _cSharpCompiler.Setup(c => c.Compile(_sourceCode, SystemAssembly, roc)).Returns(csc.Object);
-
+        
+        var csc = new Mock<ICSharpCompilation>();
+        var wrapper = new CSharpCompilationWrapper();
+        _cSharpCompiler.Setup(c => c.Compile(_sourceCode, SystemAssembly, roc)).Returns(wrapper);
+        
         var sourceCode = "1 + 1";
         var result = await _compiler.CompileAsync(sourceCode, _defaultImports);
         result.Value.Should().Be(new Success("Hello, World!"));
