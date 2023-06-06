@@ -1,5 +1,4 @@
 
-using System.Collections.ObjectModel;
 using System.Reflection;
 
 namespace BlazorInteractive.Compilation;
@@ -13,16 +12,14 @@ public sealed class LocalAppDomainAssemblyAccessor : IAssemblyAccessor<Assembly>
             return Task.FromResult<AssemblyResult<Assembly>>(new Cancelled());
         }
 
-        ReadOnlyCollection<Assembly> assemblies = AppDomain.CurrentDomain
+        var assemblies = AppDomain.CurrentDomain
             .GetAssemblies()
             .Where(a => !string.IsNullOrEmpty(a.FullName) && importNames.Any(n => a.FullName.StartsWith(n)))
             .ToList()
             .AsReadOnly();
 
-        if (!assemblies.Any())
-        {
-            return Task.FromResult<AssemblyResult<Assembly>>(new Failure(new AppDomainAssemblyException(), "Unable to load AppDomain assemblies"));
-        }
-        return Task.FromResult<AssemblyResult<Assembly>>(assemblies);
+        return !assemblies.Any()
+            ? Task.FromResult<AssemblyResult<Assembly>>(new Failure(new AppDomainAssemblyException(), "Unable to load AppDomain assemblies"))
+            : Task.FromResult<AssemblyResult<Assembly>>(assemblies);
     }
 }

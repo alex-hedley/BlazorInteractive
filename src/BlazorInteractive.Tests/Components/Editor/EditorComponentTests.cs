@@ -1,10 +1,7 @@
-using AngleSharp.Dom;
 using Bunit;
 using FluentAssertions;
 
 using BlazorInteractive.Components.Editor;
-using Newtonsoft.Json.Linq;
-using System.Diagnostics.Contracts;
 
 namespace BlazorInteractive.Tests.Components.Editor;
 
@@ -24,10 +21,10 @@ public class EditorComponentTests : UnitTestBase
     {
         JSInterop.Setup<string>(_monacoGetValueFunction, _ => true);
 
-        IRenderedComponent<EditorComponent> cut = RenderComponent<EditorComponent>();
-        IElement element = cut.Find(_editorDivId);
+        var cut = RenderComponent<EditorComponent>();
+        var element = cut.Find(_editorDivId);
 
-        IElement button = cut.Find("button");
+        var button = cut.Find("button");
 
         button.Click();
 

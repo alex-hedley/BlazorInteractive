@@ -29,14 +29,14 @@ public class BlazorAssemblyAccessor : IAssemblyAccessor<ImmutableArray<byte>>
         try
         {
             // https://stackoverflow.com/a/73944260
-            using HttpResponseMessage response = await _httpClient.GetAsync($"_framework/blazor.boot.json", cancellationToken);
+            using var response = await _httpClient.GetAsync($"_framework/blazor.boot.json", cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
                 return new Failure("blazor.boot.json failed to load");
             }
 
-            string json = await response.Content.ReadAsStringAsync(cancellationToken);
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             var bootstrap = JsonSerializer.Deserialize<BootstrapInfo>(json, options);
             if (bootstrap is null)

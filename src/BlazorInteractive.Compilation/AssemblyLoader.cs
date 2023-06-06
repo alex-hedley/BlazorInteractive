@@ -1,8 +1,7 @@
 using System.Reflection;
-using BlazorInteractive.Compilation;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Extensions.Logging;
+using BlazorInteractive.Compilation;
 
 public class AssemblyLoader : IAssemblyLoader
 {
@@ -16,14 +15,14 @@ public class AssemblyLoader : IAssemblyLoader
     public AssemblyLoaderResult Load(ICSharpCompilation compilation)
     {
         using var ms = new MemoryStream();
-        EmitResult result = compilation.Value.Emit(ms);
+        var result = compilation.Value.Emit(ms);
         if (!result.Success)
         {
-            IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
+            var failures = result.Diagnostics.Where(diagnostic =>
                 diagnostic.IsWarningAsError ||
                 diagnostic.Severity == DiagnosticSeverity.Error);
 
-            foreach (Diagnostic diagnostic in failures)
+            foreach (var diagnostic in failures)
             {
                 _logger.LogError("{Id}: {Message}", diagnostic.Id, diagnostic.GetMessage());
             }

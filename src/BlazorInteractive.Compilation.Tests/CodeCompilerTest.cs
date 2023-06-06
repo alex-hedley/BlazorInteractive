@@ -16,7 +16,7 @@ public class CodeCompilerTest
     private readonly List<string> _defaultImports;
 
     private readonly string _sourceCode = string.Empty;
-    private static Assembly[] _appDomainAssemblies;
+    private static readonly Assembly[] _appDomainAssemblies;
 
     static CodeCompilerTest()
     {
@@ -50,7 +50,7 @@ public class CodeCompilerTest
         //_cSharpCompiler.Setup(c => c.Compile(_sourceCode, SystemAssembly, roc)).Returns(wrapper);
         _cSharpCompiler.Setup(c => c.Compile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ReadOnlyCollection<IReference>>())).Returns(wrapper);
 
-        Assembly dummyAssembly = typeof(CodeCompilerTest).Assembly;
+        var dummyAssembly = typeof(CodeCompilerTest).Assembly;
         _assemblyLoader.Setup(a => a.Load(It.IsAny<ICSharpCompilation>())).Returns(dummyAssembly);
 
         var sourceCode = "1 + 1";
@@ -68,7 +68,7 @@ public class CodeCompilerTest
     [Fact]
     public async Task CompileAsync_WithoutSourceCode_ReturnFailure()
     {
-        var sourceCode = String.Empty;
+        var sourceCode = string.Empty;
 
         var result = await _compiler.CompileAsync(sourceCode, _defaultImports);
         result.Value.Should().BeOfType<Failure>();
@@ -77,7 +77,7 @@ public class CodeCompilerTest
     [Fact]
     public async Task CompileAsync_WithoutImports_ReturnFailure()
     {
-        List<string> imports = new List<string>();
+        var imports = new List<string>();
 
         var result = await _compiler.CompileAsync(_sourceCode, imports);
         result.Value.Should().BeOfType<Failure>();

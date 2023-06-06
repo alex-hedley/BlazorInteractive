@@ -5,17 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch (console)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/BlazorInteractive.Prototype/bin/Debug/net7.0/BlazorInteractive.Prototype.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        },
-        {
             "type": "blazorwasm",
             "name": "Launch and Debug Blazor WebAssembly Application",
             "request": "launch",

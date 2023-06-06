@@ -1,4 +1,3 @@
-using AngleSharp.Dom;
 using Bunit;
 using FluentAssertions;
 
@@ -15,9 +14,9 @@ public class OutputComponentTests : UnitTestBase
     public void GetContentFromOutput()
     {
         const string expectedContent = _helloWorld;
-        IRenderedComponent<OutputComponent> cut = RenderComponent<OutputComponent>(parameters => parameters.Add(p => p.Content, expectedContent));
+        var cut = RenderComponent<OutputComponent>(parameters => parameters.Add(p => p.Content, expectedContent));
 
-        IElement element = cut.Find(_outputDivId);
+        var element = cut.Find(_outputDivId);
         element.Should().NotBeNull();
         element.InnerHtml.Should().Be(expectedContent);
     }
@@ -26,9 +25,9 @@ public class OutputComponentTests : UnitTestBase
     public void SetContent()
     {
         const string expectedContent = _helloWorld;
-        IRenderedComponent<OutputComponent> cut = RenderComponent<OutputComponent>(parameters => parameters.Add(p => p.Content, expectedContent));
+        var cut = RenderComponent<OutputComponent>(parameters => parameters.Add(p => p.Content, expectedContent));
 
-        IElement element = cut.Find(_outputDivId);
+        var element = cut.Find(_outputDivId);
         element.Should().NotBeNull();
         element.InnerHtml.Should().Be(expectedContent);
     }

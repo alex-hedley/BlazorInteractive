@@ -1,12 +1,8 @@
-using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
-using System.Net;
 using System.Reflection;
-
-using Moq.Protected;
 
 using static BlazorInteractive.Compilation.Tests.RemoteFileReferenceResolverTestData;
 
@@ -18,21 +14,18 @@ public class RemoteFileReferenceResolverTest
     private readonly Mock<IAssemblyAccessor<ImmutableArray<byte>>> _assemblyAccessor;
     private readonly CancellationToken _defaultCancellationToken;
 
-    private Mock<IStorageAccessor> _storageAccessor;
-
     public RemoteFileReferenceResolverTest()
     {
         _assemblyAccessor = new Mock<IAssemblyAccessor<ImmutableArray<byte>>>();
         _defaultCancellationToken = CancellationToken.None;
         _logger = new Mock<ILogger<RemoteFileReferenceResolver>>();
-        _storageAccessor = new Mock<IStorageAccessor>();
     }
 
     [Theory]
     [ClassData(typeof(RemoteFileReferenceResolverTestData))]
     public async Task ResolveAsync_WithDefaultAssemblies_ReturnsItems(string assemblyName)
     {
-        Assembly assembly = Assembly.Load(assemblyName);
+        var assembly = Assembly.Load(assemblyName);
         var assemblyBytes = File.ReadAllBytes(assembly.Location);
         var assemblyImmutableBytes = ImmutableArray.Create(assemblyBytes);
         var readonlyList = new ReadOnlyCollection<ImmutableArray<byte>>(new List<ImmutableArray<byte>> { assemblyImmutableBytes } );
@@ -44,7 +37,6 @@ public class RemoteFileReferenceResolverTest
         var result = await remoteFileReferenceResolver.ResolveAsync(new [] { assemblyName }, _defaultCancellationToken);
         result.Value.Should().NotBeNull();
         result.Value.As<ReadOnlyCollection<IReference>>().Should().NotBeEmpty();
-
     }
 
     [Fact]

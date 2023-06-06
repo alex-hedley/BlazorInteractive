@@ -45,7 +45,7 @@
         }}
         ";
 
-        string sourceCode = string.Format(sourceCodeFormat, editorText);
+        var sourceCode = string.Format(sourceCodeFormat, editorText);
 
         var imports = Assembly.GetEntryAssembly()?.GetReferencedAssemblies().Select(o => Assembly.Load(o)).ToList();
         imports.Add(typeof(object).Assembly);
@@ -53,7 +53,7 @@
         imports.Add(typeof(Enumerable).Assembly);
 
         var importNames = imports.Select(a => a.GetName().Name!).ToList();
-        CompilationResult compilationResult = await CodeCompiler.CompileAsync(sourceCode, importNames);
+        var compilationResult = await CodeCompiler.CompileAsync(sourceCode, importNames);
 
         //Type type = scriptAssembly.GetType("RoslynCompileSample.Writer");
         //// create an instance

@@ -1,5 +1,4 @@
 using Microsoft.CodeAnalysis;
-using Microsoft.Extensions.Logging;
 
 namespace BlazorInteractive.Compilation;
 
@@ -36,13 +35,13 @@ public class CodeCompiler : ICompiler
         {
             var references = await _referenceResolver.ResolveAsync(imports, cancellationToken);
 
-            return references.Match<CompilationResult>(
+            return references.Match(
                 refs =>
                 {
                     var assemblyName = Path.GetRandomFileName();
 
                     var compiler = _cSharpCompiler.Compile(sourceCode, assemblyName, refs);
-                    return compiler.Match<CompilationResult>(
+                    return compiler.Match(
                         compilation =>
                         {
                             return _assemblyLoader.Load(compilation).Match<CompilationResult>(

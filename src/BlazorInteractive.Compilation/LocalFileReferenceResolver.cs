@@ -1,6 +1,5 @@
 using Microsoft.CodeAnalysis;
 using System.Reflection;
-using System.Runtime.Loader;
 
 namespace BlazorInteractive.Compilation;
 
@@ -23,7 +22,7 @@ public class LocalFileReferenceResolver : IReferenceResolver
         
         try
         {    
-            AssemblyResult<Assembly> assembliesResult = await _assemblyAccessor.GetAsync(importNames, cancellationToken);
+            var assembliesResult = await _assemblyAccessor.GetAsync(importNames, cancellationToken);
 
             result = assembliesResult
                 .Match<ReferenceResult>(

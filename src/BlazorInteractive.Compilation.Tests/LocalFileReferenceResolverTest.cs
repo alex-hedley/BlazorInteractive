@@ -3,21 +3,20 @@ using Microsoft.CodeAnalysis;
 using System.Collections.ObjectModel;
 using System.Reflection;
 
-using BlazorInteractive.Compilation;
-
 namespace BlazorInteractive.Compilation.Tests;
 
 using static BlazorInteractive.Compilation.Tests.LocalFileReferenceResolverTestData;
 
 public class LocalFileReferenceResolverTest
 {
-    private static IEnumerable<Assembly> _appDomainAssemblies;
+    private static readonly IEnumerable<Assembly> _appDomainAssemblies;
+
     private readonly Mock<IAssemblyAccessor<Assembly>> _assemblyAccessor;
+
     private readonly CancellationToken _defaultCancellationToken;
-    private readonly Mock<IStorageAccessor> _storageAccessor;
 
     private readonly LocalFileReferenceResolver _localFileReferenceResolver;
-    
+
     private readonly List<string> _defaultAssemblyNames;
 
     static LocalFileReferenceResolverTest()
@@ -29,7 +28,6 @@ public class LocalFileReferenceResolverTest
     {
         _assemblyAccessor = new Mock<IAssemblyAccessor<Assembly>>();
         _defaultCancellationToken = CancellationToken.None;
-        _storageAccessor = new Mock<IStorageAccessor>();
         _localFileReferenceResolver = new LocalFileReferenceResolver(_assemblyAccessor.Object);
         _defaultAssemblyNames = new List<string> { SystemAssembly, SystemCollectionsAssembly };
     }
@@ -46,7 +44,7 @@ public class LocalFileReferenceResolverTest
 
     [Fact]
     public async Task ResolveAsync_WithCreateFromFile_FileNotFound_ReturnsFailure()
-    {        
+    {
         var badAssembly = new Mock<Assembly>();
         badAssembly.Setup(m => m.FullName).Returns(InvalidAssembly);
         badAssembly.Setup(m => m.IsDynamic).Returns(false);
@@ -66,9 +64,9 @@ public class LocalFileReferenceResolverTest
     [Fact]
     public async Task ResolveAsync_WithGetAssemblyFailure_ReturnsFailure()
     {
-        AppDomainAssemblyException exception = new AppDomainAssemblyException();
+        var exception = new AppDomainAssemblyException();
         _assemblyAccessor.Setup(a => a.GetAsync(_defaultAssemblyNames, _defaultCancellationToken)).ReturnsAsync(new Failure(exception, exception.Message));
-        
+
         var result = await _localFileReferenceResolver.ResolveAsync(_defaultAssemblyNames);
         result.Value.Should().BeOfType<Failure>();
         result.Value.As<Failure>().Exception.Should().BeOfType<AppDomainAssemblyException>();
@@ -79,7 +77,7 @@ public class LocalFileReferenceResolverTest
     {
         var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
-        
+
         cancellationTokenSource.Cancel();
         var result = await _localFileReferenceResolver.ResolveAsync(_defaultAssemblyNames, cancellationToken);
         result.Value.Should().BeOfType<Cancelled>();
