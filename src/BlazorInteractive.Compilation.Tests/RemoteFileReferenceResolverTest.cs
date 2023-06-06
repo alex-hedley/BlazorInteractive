@@ -43,7 +43,8 @@ public class RemoteFileReferenceResolverTest
 
         var result = await remoteFileReferenceResolver.ResolveAsync(new [] { assemblyName }, _defaultCancellationToken);
         result.Value.Should().NotBeNull();
-        result.Value.As<ReadOnlyCollection<MetadataReference>>().Should().NotBeEmpty();
+        result.Value.As<ReadOnlyCollection<IReference>>().Should().NotBeEmpty();
+
     }
 
     [Fact]

@@ -1,7 +1,6 @@
 using System.Reflection;
 using BlazorInteractive.Compilation;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Extensions.Logging;
 

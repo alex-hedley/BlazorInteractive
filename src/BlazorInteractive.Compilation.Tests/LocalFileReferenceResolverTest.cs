@@ -41,7 +41,7 @@ public class LocalFileReferenceResolverTest
 
         var result = await _localFileReferenceResolver.ResolveAsync(_defaultAssemblyNames);
         result.Value.Should().NotBeNull();
-        result.Value.As<ReadOnlyCollection<MetadataReference>>().Should().NotBeEmpty();
+        result.Value.As<ReadOnlyCollection<IReference>>().Should().NotBeEmpty();
     }
 
     [Fact]

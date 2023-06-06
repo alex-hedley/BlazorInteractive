@@ -1,21 +1,17 @@
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
 
 namespace BlazorInteractive.Compilation;
 
 public class CodeCompiler : ICompiler
 {
-    private readonly ILogger _logger;
     private readonly IReferenceResolver _referenceResolver;
     private readonly ICSharpCompiler _cSharpCompiler;
     private readonly IAssemblyLoader _assemblyLoader;
 
-    public CodeCompiler(ILogger<CodeCompiler> logger, IReferenceResolver referenceResolver, ICSharpCompiler cSharpCompiler, IAssemblyLoader assemblyLoader)
+    public CodeCompiler(IReferenceResolver referenceResolver, ICSharpCompiler cSharpCompiler, IAssemblyLoader assemblyLoader)
     {
         _referenceResolver = referenceResolver;
-        _logger = logger;
         _cSharpCompiler =  cSharpCompiler;
         _assemblyLoader = assemblyLoader;
     }
@@ -44,7 +40,7 @@ public class CodeCompiler : ICompiler
                 refs =>
                 {
                     var assemblyName = Path.GetRandomFileName();
-                    
+
                     var compiler = _cSharpCompiler.Compile(sourceCode, assemblyName, refs);
                     return compiler.Match<CompilationResult>(
                         compilation =>
