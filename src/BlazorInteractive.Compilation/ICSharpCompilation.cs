@@ -4,5 +4,5 @@ namespace BlazorInteractive.Compilation;
 
 public interface ICSharpCompilation
 {
-    CSharpCompilation Value { get; set; }
+    CSharpCompilation? Value { get; set; }
 }

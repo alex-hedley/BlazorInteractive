@@ -2,10 +2,12 @@ namespace BlazorInteractive.AssemblyCompilation;
 
 public sealed record BootstrapInfo
 {
-    public BootstrapInfoResources Resources { get; set; }
+    public BootstrapInfoResources? Resources { get; set; }
 
-    public IEnumerable<string> Assemblies(IEnumerable<string>? filter = default)
+    public IEnumerable<string>? Assemblies(IEnumerable<string>? filter = default)
     {
+        if (Resources?.Assembly == null) return null;
+        
         var query = Resources.Assembly
             .Where(a => !string.IsNullOrWhiteSpace(a.Key) || !string.IsNullOrWhiteSpace(a.Value));
 

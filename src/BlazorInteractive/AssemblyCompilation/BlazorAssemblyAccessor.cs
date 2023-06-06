@@ -44,11 +44,13 @@ public class BlazorAssemblyAccessor : IAssemblyAccessor<ImmutableArray<byte>>
                 return new Failure("No Assemblies found in blazor.boot.json");
             }
 
-            _logger.LogInformation("Assemblies total {Count}", bootstrap.Assemblies().Count());
+            _logger.LogInformation("Assemblies total {Count}", (bootstrap.Assemblies() ?? Array.Empty<string>()).Count());
 
             var assemblies = new List<ImmutableArray<byte>>();
 
             var filteredAssemblies = bootstrap.Assemblies(importNames);
+            // if (filteredAssemblies is null) return null;
+            
             _logger.LogInformation("Filtered assemblies total {Count}", filteredAssemblies.Count());
 
             foreach(var assemblyName in filteredAssemblies)

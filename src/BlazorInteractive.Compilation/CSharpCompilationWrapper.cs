@@ -6,10 +6,10 @@ public class CSharpCompilationWrapper : ICSharpCompilation
 {
     public CSharpCompilationWrapper() { }
     
-    public CSharpCompilationWrapper(CSharpCompilation value)
+    public CSharpCompilationWrapper(CSharpCompilation? value)
     {
         Value = value;
     }
     
-    public CSharpCompilation Value { get; set; }
+    public CSharpCompilation? Value { get; set; }
 }

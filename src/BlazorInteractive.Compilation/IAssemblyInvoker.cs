@@ -4,5 +4,5 @@ namespace BlazorInteractive.Compilation;
 
 public interface IAssemblyInvoker
 {
-    string Invoke(Assembly assembly, string typeName, string methodName, params object[] args);
+    string? Invoke(Assembly assembly, string typeName, string methodName, params object[] args);
 }

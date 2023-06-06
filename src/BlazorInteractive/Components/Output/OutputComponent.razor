@@ -4,23 +4,23 @@
 
 @code {
     [Parameter]
-    public string Content { get; set; }
+    public string? Content { get; set; }
 
     [Parameter]
-    public string OutputClass { get; set; }
+    public string? OutputClass { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         OutputClass = "normal";
     }
 
-    public void SetContent(string content)
+    public void SetContent(string? content)
     {
         Content = content;
         StateHasChanged();
     }
 
-    public void SetClass(string outputClass)
+    public void SetClass(string? outputClass)
     {
         OutputClass = outputClass;
         StateHasChanged();

@@ -15,12 +15,13 @@ public class AssemblyLoader : IAssemblyLoader
     public AssemblyLoaderResult Load(ICSharpCompilation compilation)
     {
         using var ms = new MemoryStream();
-        var result = compilation.Value.Emit(ms);
-        if (!result.Success)
+        var result = compilation.Value?.Emit(ms);
+        if (result is { Success: false })
         {
             var failures = result.Diagnostics.Where(diagnostic =>
                 diagnostic.IsWarningAsError ||
-                diagnostic.Severity == DiagnosticSeverity.Error);
+                diagnostic.Severity == DiagnosticSeverity.Error)
+                .ToList();
 
             foreach (var diagnostic in failures)
             {
