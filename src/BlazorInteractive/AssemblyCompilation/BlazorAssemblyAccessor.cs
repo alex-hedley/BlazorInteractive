@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Text.Json;
 
 using BlazorInteractive.Compilation;
+using BlazorInteractive.Compilation.Results;
 
 namespace BlazorInteractive.AssemblyCompilation;
 

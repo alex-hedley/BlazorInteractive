@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Reflection;
-
+using BlazorInteractive.Compilation.Results;
 using static BlazorInteractive.Compilation.Tests.RemoteFileReferenceResolverTestData;
 
 namespace BlazorInteractive.Compilation.Tests;

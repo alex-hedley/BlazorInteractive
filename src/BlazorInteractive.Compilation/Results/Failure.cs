@@ -1,4 +1,4 @@
-namespace BlazorInteractive.Compilation;
+namespace BlazorInteractive.Compilation.Results;
 
 public sealed record Failure(string errorMessage) {
 

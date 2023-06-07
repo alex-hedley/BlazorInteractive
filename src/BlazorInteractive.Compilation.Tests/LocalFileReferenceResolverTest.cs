@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using System.Collections.ObjectModel;
 using System.Reflection;
+using BlazorInteractive.Compilation.Results;
 
 namespace BlazorInteractive.Compilation.Tests;
 

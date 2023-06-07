@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using System.Collections.Immutable;
+using BlazorInteractive.Compilation.Results;
 
 namespace BlazorInteractive.Compilation;
 
@@ -15,9 +16,9 @@ public class RemoteFileReferenceResolver : IReferenceResolver
         _logger = logger;
     }
 
-    public async Task<ReferenceResult> ResolveAsync(IEnumerable<string> importNames, CancellationToken cancellationToken = default)
+    public async Task<Results.ReferenceResult> ResolveAsync(IEnumerable<string> importNames, CancellationToken cancellationToken = default)
     {
-        ReferenceResult result;
+        Results.ReferenceResult result;
 
         if (cancellationToken.IsCancellationRequested) {
             result = new Cancelled();
@@ -30,7 +31,7 @@ public class RemoteFileReferenceResolver : IReferenceResolver
 
         _logger.LogInformation("Assemblies loaded");
 
-        return assemblyBytes.Match<ReferenceResult>(
+        return assemblyBytes.Match<Results.ReferenceResult>(
             assemblies => {
                 return assemblies
                     .Select(a => new Reference(MetadataReference.CreateFromImage(a)))

@@ -3,6 +3,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.ObjectModel;
 
 using BlazorInteractive.Compilation;
+using BlazorInteractive.Compilation.Results;
+using CSharpCompilationResult = BlazorInteractive.Compilation.Results.CSharpCompilationResult;
 
 public class CSharpCompiler : ICSharpCompiler
 {

@@ -2,6 +2,8 @@ using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using BlazorInteractive.Compilation;
+using BlazorInteractive.Compilation.Results;
+using AssemblyLoaderResult = BlazorInteractive.Compilation.Results.AssemblyLoaderResult;
 
 public class AssemblyLoader : IAssemblyLoader
 {
