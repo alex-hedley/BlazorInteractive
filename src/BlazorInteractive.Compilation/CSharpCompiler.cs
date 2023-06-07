@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.ObjectModel;
 
@@ -17,11 +18,16 @@ public class CSharpCompiler : ICSharpCompiler
             return new Failure($"{nameof(assemblyName)} cannot be null or empty");
         }
 
-        var options = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Default);
-        var parsedSyntaxTree = SyntaxFactory.ParseSyntaxTree(sourceCode, options);
+        var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Default);
+        var parsedSyntaxTree = SyntaxFactory.ParseSyntaxTree(sourceCode, parseOptions);
+        var options = new CSharpCompilationOptions(
+            OutputKind.DynamicallyLinkedLibrary,
+            concurrentBuild: false,
+            optimizationLevel: OptimizationLevel.Debug
+        );
 
         ICSharpCompilationBuilder builder = new CSharpCompilationBuilder();
-        var compilation = builder.Create(assemblyName, new[] { parsedSyntaxTree }, references);
+        var compilation = builder.Create(assemblyName, new[] { parsedSyntaxTree }, references, options);
         return new CSharpCompilationWrapper(compilation.Value);
     }
 }

@@ -49,8 +49,11 @@ public class BlazorAssemblyAccessor : IAssemblyAccessor<ImmutableArray<byte>>
             var assemblies = new List<ImmutableArray<byte>>();
 
             var filteredAssemblies = bootstrap.Assemblies(importNames);
-            // if (filteredAssemblies is null) return null;
-            
+            if (filteredAssemblies is null)
+            {
+                return new Failure($"No assemblies found for {nameof(importNames)}");
+            }
+
             _logger.LogInformation("Filtered assemblies total {Count}", filteredAssemblies.Count());
 
             foreach(var assemblyName in filteredAssemblies)
