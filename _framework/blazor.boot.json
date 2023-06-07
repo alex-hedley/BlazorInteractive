@@ -9,8 +9,8 @@
   "linkerEnabled": true,
   "resources": {
     "assembly": {
-      "BlazorInteractive.Compilation.dll": "sha256-IUM7+SaR39QqFLyYvO66ejQHDse6nusiwkVBaz4TyG4=",
-      "BlazorInteractive.dll": "sha256-DvtT\/p7ta4MaxuQPGIGqpOfyqW6YDfTkv8g3D7+hb5o=",
+      "BlazorInteractive.Compilation.dll": "sha256-7GqVP4pCQhXWLECUiGMsFAJR80kX1dp58+QPPkK96y8=",
+      "BlazorInteractive.dll": "sha256-Bvuv6s5gLFK49LfHB7TZGxNlgvvbXFpw1kP7Jfr\/TdA=",
       "BlazorMonaco.dll": "sha256-Hbwc+8Nc7E6NYECP0pDCuU7w9KjJoNK0LYI95D\/mJEI=",
       "Microsoft.AspNetCore.Components.dll": "sha256-0xYFXgFBcAn\/CsotaPOGDMU6kgUpv6suKFKyvGJOzu8=",
       "Microsoft.AspNetCore.Components.Web.dll": "sha256-PSWW+AMMyYy6ceznG4JFR03IfHljgrVem561PnAjGp4=",
@@ -37,7 +37,7 @@
       "System.Collections.NonGeneric.dll": "sha256-ccYuUqilJ\/\/NxKw3hur68VcrS7Dj7MRK0hwqgnBlxDo=",
       "System.ComponentModel.dll": "sha256-nDL4uAnV8XjBp7HMR8402tCIjKLnxen\/fQEcevUyqXs=",
       "System.ComponentModel.TypeConverter.dll": "sha256-92Y0jALWn9+gRbI9sReWeEO4k62p94x42gYUuP+pKqU=",
-      "System.Console.dll": "sha256-5qctWOAIO7dquMNHrH1jxFM80WFdFPQHp0MESJHI6m8=",
+      "System.Console.dll": "sha256-xHtob6dYPkV\/lytDHmbGorOyhsGivk8fPhh4DwnB0c4=",
       "System.Diagnostics.StackTrace.dll": "sha256-cXROZRfQNqJFJ9HkoeQ6vnYiMRyV5wZmv71RFvfOVd8=",
       "System.Diagnostics.Tracing.dll": "sha256-H1QI8+m5yv0A1CcuFr3Kvgjm6zGIdPYRn4vDXzy70KQ=",
       "System.Globalization.dll": "sha256-31AilOqxpL9lCvCJQzgnmwSg3Xif01BSwMxglDrbfCU=",
@@ -49,7 +49,7 @@
       "System.Net.Http.dll": "sha256-uLwtHnGxkv94ojbmdRnHGWibPCEWLIfYEZ0HNkWNTKU=",
       "System.Net.Primitives.dll": "sha256-w\/jRFhpRhZkR8OHpSgWF02HVhJhl9QVgT\/x+4sD4Xyc=",
       "System.ObjectModel.dll": "sha256-ZdlHNXGiOpC+pdNhqv07NuqKLS6+nPwGAmY6xU0ndS0=",
-      "System.Private.CoreLib.dll": "sha256-++MGOf7Zi0XIADn2QORpiy2wmSwXs\/I2rUQiUhweK6k=",
+      "System.Private.CoreLib.dll": "sha256-sQ3eUzuZ95A7NhKERVR3QIqfSg3xcJ8a8witObCXMKM=",
       "System.Private.Uri.dll": "sha256-mVSSkHT3k6UaCxA3B9N\/59iwpUQYmp3Z+NM+hKAUrSs=",
       "System.Private.Xml.dll": "sha256-D1AGjFI\/RvjmCfjytQIGD6tiMqhReymrrJgh6b6bPI0=",
       "System.Private.Xml.Linq.dll": "sha256-FS1Sip\/zZbJsKtOkvaejo50VTQuWiDJcLJs3Q+sfFSo=",
