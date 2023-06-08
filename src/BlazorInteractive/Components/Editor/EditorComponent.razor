@@ -24,17 +24,22 @@
     </div>
     <div class="row">
         <div class="col">
-            <button @onclick="Compile">Compile</button>
+            <button @onclick="Compile" class="btn btn-info" disabled="@CanCancel">Compile</button>
+            <button @onclick="Cancel" class="btn btn-info" disabled="@(!CanCancel)">Cancel</button>
         </div>
     </div>
 </div>
 
 @code {
-
     [Parameter]
-    public EventCallback<string> OnCompile { get; set; }
+    public EventCallback<CompilationArgs> OnCompile { get; set; }
 
     private StandaloneCodeEditor _editor = null!;
+    private CancellationTokenSource? _cts;
+    private bool CanCancel = false;
+    
+    //protected override async Task OnInitializedAsync()
+    //{}
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
@@ -48,9 +53,26 @@
 
     private async Task Compile()
     {
+        _cts = new CancellationTokenSource();
         string value = await _editor.GetValue();
-        //await cs.Run(value);
-        await OnCompile.InvokeAsync(value);
+        var args = new CompilationArgs() { SourceCode = value, CancellationToken = _cts.Token };
+        try
+        {
+            CanCancel = true;
+            await OnCompile.InvokeAsync(args);
+            StateHasChanged();
+        }
+        finally 
+        {
+            CanCancel = false;
+        }
+        _cts = null;
+    }
+
+    private void Cancel()
+    {
+        CanCancel = false;
+        _cts?.Cancel();
     }
 
     private async Task ChangeTheme(ChangeEventArgs e)

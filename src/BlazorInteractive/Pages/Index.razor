@@ -27,8 +27,10 @@
     private string? output = string.Empty;
     private string? outputClass = string.Empty;
 
-    private async Task OnCompileAsync(string editorText)
+    private async Task OnCompileAsync(CompilationArgs args)
     {
+        output = string.Empty;
+        
         const string sourceCodeFormat = @"
         using System;
 
@@ -44,7 +46,7 @@
         }}
         ";
 
-        var sourceCode = string.Format(sourceCodeFormat, editorText);
+        var sourceCode = string.Format(sourceCodeFormat, args.SourceCode);
 
         var imports = Assembly.GetEntryAssembly()?.GetReferencedAssemblies().Select(Assembly.Load).ToList();
         imports?.Add(typeof(object).Assembly);
@@ -52,25 +54,28 @@
         imports?.Add(typeof(Enumerable).Assembly);
 
         var importNames = imports?.Select(a => a.GetName().Name!).ToList();
-        var compilationResult = await CodeCompiler.CompileAsync(sourceCode, importNames);
-
-        output = compilationResult.Match(
-            assembly => {
-                outputClass = "success";
-                return AssemblyInvoker.Invoke(assembly, "BlazorInteractive.Program", "Main");
-            },
-            @void => {
-                outputClass = "";
-                return string.Empty;
-            },
-            failure => {
-                outputClass = "error";
-                return failure.Exception?.Message;
-            },
-            cancelled => {
-                outputClass = "warning";
-                return string.Empty;
-            }
-        );
+        
+        await Task.Run(async () => {
+            var compilationResult = await CodeCompiler.CompileAsync(sourceCode, importNames, args.CancellationToken);
+        
+            output = compilationResult.Match(
+                assembly => {
+                    outputClass = "success";
+                    return AssemblyInvoker.Invoke(assembly, "BlazorInteractive.Program", "Main");
+                },
+                @void => {
+                    outputClass = "";
+                    return string.Empty;
+                },
+                failure => {
+                    outputClass = "error";
+                    return failure.Exception?.Message;
+                },
+                cancelled => {
+                    outputClass = "warning";
+                    return string.Empty;
+                }
+            );
+        }, args.CancellationToken);
     }
 }
