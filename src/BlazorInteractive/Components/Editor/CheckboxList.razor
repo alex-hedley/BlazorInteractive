@@ -1,0 +1,60 @@
+@typeparam TItem  
+<div style=@Style>  
+    @if (Data != null)  
+    {  
+        foreach (var item in Data)  
+        {  
+            var Text = TextField?.Invoke(item);  
+            var Value = ValueField?.Invoke(item).ToString();  
+            bool Checked = false;  
+            if (SelectedValues.Contains(Value))  
+            {  
+                Checked = true;  
+            }  
+            <input type="checkbox" checked=@Checked  @onchange="eventArgs => { CheckboxClicked(Value, eventArgs.Value); }" />  
+            @Text <br />  
+        }  
+    }  
+    @ChildContent  
+</div>
+
+@code {
+    // How To Create A Checkbox List In Blazor - S.Ravi Kumar - Jul 17, 2020
+    // https://www.c-sharpcorner.com/article/how-to-create-a-checkbox-list-in-blazor/
+    [Parameter]
+    public IEnumerable<TItem> Data { get; set; }
+
+    [Parameter]
+    public Func<TItem, string> TextField { get; set; }
+
+    [Parameter]
+    public Func<TItem, object> ValueField { get; set; }
+
+    [Parameter] 
+    public string Style { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public List<string> SelectedValues { get; set; }  
+    
+    public void CheckboxClicked(string aSelectedId, object aChecked)  
+    {  
+        if ((bool)aChecked)  
+        {  
+            if (!SelectedValues.Contains(aSelectedId))  
+            {  
+                SelectedValues.Add(aSelectedId);  
+            }  
+        }  
+        else  
+        {  
+            if (SelectedValues.Contains(aSelectedId))  
+            {  
+                SelectedValues.Remove(aSelectedId);  
+            }  
+        }  
+        StateHasChanged();  
+    }
+}

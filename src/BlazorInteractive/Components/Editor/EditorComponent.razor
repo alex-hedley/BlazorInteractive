@@ -14,7 +14,13 @@
         </div>
     </div>
     <div class="row">
-        <div class="col">
+        <div class="col-md-4">
+            <CheckboxList Data="@References"
+                TextField="@((item)=>item)"
+                ValueField="@((item)=>item)"
+                SelectedValues="@SelectedIds" /> 
+        </div>
+        <div class="col-md-8">
             <StandaloneCodeEditor
                 Id="editor"
                 ConstructionOptions="EditorConstructionOptions"
@@ -33,7 +39,11 @@
 @code {
     [Parameter]
     public EventCallback<CompilationArgs> OnCompile { get; set; }
-
+    
+    [Parameter]
+    public List<string> References { get; set; }
+    
+    private List<string> SelectedIds = new List<string>();
     private StandaloneCodeEditor _editor = null!;
     private CancellationTokenSource? _cts;
     private bool CanCancel = false;
@@ -55,7 +65,7 @@
     {
         _cts = new CancellationTokenSource();
         string value = await _editor.GetValue();
-        var args = new CompilationArgs() { SourceCode = value, CancellationToken = _cts.Token };
+        var args = new CompilationArgs() { SourceCode = value, CancellationToken = _cts.Token, References = SelectedIds };
         try
         {
             CanCancel = true;

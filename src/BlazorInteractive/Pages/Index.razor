@@ -13,7 +13,7 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <EditorComponent OnCompile="OnCompileAsync"></EditorComponent>
+            <EditorComponent OnCompile="OnCompileAsync" References="References"></EditorComponent>
         </div>
     </div>
     <div class="row mt-2">
@@ -26,7 +26,22 @@
 @code {
     private string? output = string.Empty;
     private string? outputClass = string.Empty;
+    private List<string> References = new List<string>();
 
+    protected override void OnInitialized()
+    {
+        var imports = Assembly.GetEntryAssembly()?.GetReferencedAssemblies().Select(Assembly.Load).ToList();
+        imports?.Add(typeof(object).Assembly);
+        imports?.Add(typeof(Console).Assembly);
+        imports?.Add(typeof(Enumerable).Assembly);
+        
+        References = imports?
+                        .Select(a => a.GetName().Name!)
+                        .Distinct()
+                        .OrderBy(a => a)
+                        .ToList();
+    }
+    
     private async Task OnCompileAsync(CompilationArgs args)
     {
         output = string.Empty;
@@ -47,16 +62,9 @@
         ";
 
         var sourceCode = string.Format(sourceCodeFormat, args.SourceCode);
-
-        var imports = Assembly.GetEntryAssembly()?.GetReferencedAssemblies().Select(Assembly.Load).ToList();
-        imports?.Add(typeof(object).Assembly);
-        imports?.Add(typeof(Console).Assembly);
-        imports?.Add(typeof(Enumerable).Assembly);
-
-        var importNames = imports?.Select(a => a.GetName().Name!).ToList();
         
         await Task.Run(async () => {
-            var compilationResult = await CodeCompiler.CompileAsync(sourceCode, importNames, args.CancellationToken);
+            var compilationResult = await CodeCompiler.CompileAsync(sourceCode, args.References, args.CancellationToken);
         
             output = compilationResult.Match(
                 assembly => {
