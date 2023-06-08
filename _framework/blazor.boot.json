@@ -10,7 +10,7 @@
   "resources": {
     "assembly": {
       "BlazorInteractive.Compilation.dll": "sha256-7GqVP4pCQhXWLECUiGMsFAJR80kX1dp58+QPPkK96y8=",
-      "BlazorInteractive.dll": "sha256-Bvuv6s5gLFK49LfHB7TZGxNlgvvbXFpw1kP7Jfr\/TdA=",
+      "BlazorInteractive.dll": "sha256-pEk\/fCFgkHnnYMt1\/51yw94B\/ycQ49T4MCwt4pY8WHM=",
       "BlazorMonaco.dll": "sha256-Hbwc+8Nc7E6NYECP0pDCuU7w9KjJoNK0LYI95D\/mJEI=",
       "Microsoft.AspNetCore.Components.dll": "sha256-0xYFXgFBcAn\/CsotaPOGDMU6kgUpv6suKFKyvGJOzu8=",
       "Microsoft.AspNetCore.Components.Web.dll": "sha256-PSWW+AMMyYy6ceznG4JFR03IfHljgrVem561PnAjGp4=",
