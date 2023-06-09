@@ -11,3 +11,5 @@
 ## Demo
 
 ![Demo](images/demo.gif)
+
+![Progress](images/progress.png "Progress")

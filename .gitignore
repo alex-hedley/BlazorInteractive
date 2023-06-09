@@ -359,4 +359,4 @@ MigrationBackup/
 .DS_Store
 
 **/coveragereport/**/**
-src/coverage.json
+src/**/coverage.json

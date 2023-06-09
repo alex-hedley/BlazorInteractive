@@ -13,6 +13,8 @@
 
 ![Demo](docs/images/demo.gif)
 
+![Progress](docs/images/progress.png "Progress")
+
 ## Solution
 
 | Project | Type |Info |
@@ -21,10 +23,6 @@
 | BlazorInteractive.Compilation | | |
 | BlazorInteractive.Compilation.Tests | | |
 | BlazorInteractive.Tests | | |
-
-| Project | Type | Info |
-|-|-|-|
-| BlazorInteractive.Prototype | Exe | Testing concepts |
 
 ## Docs
 
