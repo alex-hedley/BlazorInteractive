@@ -1,39 +1,46 @@
 @* @inject CompilerService cs *@
 
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <div style="margin:10px 0;">
-                Theme:
-                <select id="theme" @onchange="ChangeTheme">
-                    <option value="vs">Visual Studio</option>
-                    <option value="vs-dark">Visual Studio Dark</option>
-                    <option value="hc-black">High Contrast Black</option>
-                </select>
-            </div>
+<div class="row">
+    <div class="col">
+        <div style="margin:10px 0;">
+            Theme:
+            <select id="theme" @onchange="ChangeTheme">
+                <option value="vs">Visual Studio</option>
+                <option value="vs-dark">Visual Studio Dark</option>
+                <option value="hc-black">High Contrast Black</option>
+            </select>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-4">
-            <CheckboxList Data="@(SortedReferencesWithoutExtension())"
-                TextField="@((item) => item)"
-                ValueField="@((item) => item)"
-                SelectedValues="@SelectedIds"
-                DisabledValues="@DisabledIds" />
-        </div>
-        <div class="col-md-8">
-            <StandaloneCodeEditor
-                Id="editor"
-                ConstructionOptions="EditorConstructionOptions"
-                CssClass="editor"
-                @ref="_editor" />
-        </div>
+</div>
+<div class="row">
+    <div class="col">
+        <h1>Code Compiler</h1>
     </div>
-    <div class="row">
-        <div class="col">
-            <button @onclick="Compile" class="btn btn-info" disabled="@CanCancel">Compile</button>
-            <button @onclick="Cancel" class="btn btn-info" disabled="@(!CanCancel)">Cancel</button>
-        </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <CheckboxList Data="@(SortedReferencesWithoutExtension())"
+                      TextField="@((item) => item.referenceNoExt)"
+                      ValueField="@((item) => item.reference)"
+                      SelectedValues="@SelectedIds"
+                      DisabledValues="@DisabledIds"
+                      Style="@Style"
+                      />
+    </div>
+    <div class="col-md-8">
+        <StandaloneCodeEditor
+            Id="editor"
+            ConstructionOptions="EditorConstructionOptions"
+            CssClass="editor"
+            @ref="_editor" />
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+    </div>
+    <div class="col">
+        <button @onclick="Compile" class="btn btn-info" disabled="@CanCancel">Compile</button>
+        <button @onclick="Cancel" class="btn btn-info" disabled="@(!CanCancel)">Cancel</button>
     </div>
 </div>
 
@@ -44,22 +51,28 @@
     [Parameter]
     public List<string> References { get; set; }
 
-    private List<string> SelectedIds = new List<string>();
-    private List<string> DisabledIds = new List<string>();
+    private List<string> SelectedIds = new();
+    private List<string> DisabledIds = new();
     private StandaloneCodeEditor _editor = null!;
     private CancellationTokenSource? _cts;
     private bool CanCancel = false;
+    private string Style = string.Empty;
 
     protected override void OnInitialized()
     {
-        var required = new List<string>() { "System", "System.Console", "System.Private.CoreLib", "System.Runtime" }; 
+        var required = new List<string>() { "System.dll", "System.Console.dll", "System.Private.CoreLib.dll", "System.Runtime.dll" }; 
         DisabledIds = required;
         SelectedIds = required;
+
+        // Style = "height: 500px; overflow:scroll;";
     }
 
-    private List<string> SortedReferencesWithoutExtension()
+    private List<(string reference, string referenceNoExt)> SortedReferencesWithoutExtension()
     {
-        return References.Select(r => r.TrimEnd(".dll")).OrderBy(a => a).ToList();
+        return References.Select(r => new  { reference = r, referenceNoExt = r.TrimEnd(".dll") })
+            .Select(c => (Reference: c.reference, ReferenceNoExt: c.referenceNoExt)) 
+            .OrderBy(a => a.Reference)
+            .ToList();
     }
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)

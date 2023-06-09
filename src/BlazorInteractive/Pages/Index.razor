@@ -10,16 +10,9 @@
 <PageTitle>Index</PageTitle>
 
 <div class="container">
-    <div class="row">
-        <div class="col">
-            <EditorComponent OnCompile="OnCompileAsync" References="References"></EditorComponent>
-        </div>
-    </div>
-    <div class="row mt-2">
-        <div class="col">
-            <OutputComponent Content="@output" OutputClass="@outputClass"></OutputComponent>
-        </div>
-    </div>
+    <EditorComponent OnCompile="OnCompileAsync" References="References"></EditorComponent>
+    <br />
+    <OutputComponent Content="@output" OutputClass="@outputClass"></OutputComponent>
 </div>
 
 @code {

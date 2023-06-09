@@ -1,5 +1,6 @@
 @typeparam TItem
 <div style=@Style>
+    <p>Namespaces:</p>
     @if (Data != null)
     {
         foreach (var item in Data.Where(i => i is not null))
@@ -8,14 +9,15 @@
             var value = ValueField?.Invoke(item).ToString();
             var isChecked = SelectedValues.Contains(value!);
             var isDisabled = DisabledValues.Contains(value!);
-
             
             <input
                 type="checkbox"
                 checked=@isChecked
                 disabled=@isDisabled
                 class="form-check-input"
-                @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />@text<br />
+                @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }"
+                value="@value"
+                />@text<br/>
             @*<label class="form-check-label" for="">
                 Default checkbox
             </label>*@
