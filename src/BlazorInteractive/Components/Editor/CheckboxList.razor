@@ -11,16 +11,18 @@
             var isDisabled = DisabledValues.Contains(value!);
             
             <input
+                id="@($"{text}Checkbox")"
                 type="checkbox"
                 checked=@isChecked
                 disabled=@isDisabled
                 class="form-check-input"
                 @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }"
                 value="@value"
-                />@text<br/>
-            @*<label class="form-check-label" for="">
-                Default checkbox
-            </label>*@
+                /> @($" {text}")
+            @* <label class="form-check-label" for="@($"{text}Checkbox")"> *@
+            @*     @text *@
+            @* </label> *@
+            <br />
         }
     }
     @ChildContent

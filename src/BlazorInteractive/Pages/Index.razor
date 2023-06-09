@@ -3,6 +3,7 @@
 
 @page "/"
 
+@inject IToastService ToastService
 @inject ICompiler CodeCompiler
 @inject IAssemblyInvoker AssemblyInvoker
 @inject IReferenceFilter ReferenceFilter
@@ -20,7 +21,7 @@
     private string? outputClass = string.Empty;
     private List<string> References = new List<string>();
 
-    protected override async Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
         var referencesResult = await ReferenceFilter.GetReferencesAsync(CancellationToken.None);
         referencesResult.Switch(
@@ -28,10 +29,10 @@
                 References = references.ToList();
             },
             failure => {
-                //TODO: Show error toast
+                ToastService.ShowError(failure.errorMessage);
             },
             cancelled => {
-                //TODO: Do nothing
+                ToastService.ShowInfo("Cancelled");
             }
         );
     }
@@ -71,7 +72,8 @@
                 },
                 failure => {
                     outputClass = "error";
-                    return failure.Exception?.Message;
+                    //return failure.Exception?.Message;
+                    return failure.errorMessage;
                 },
                 cancelled => {
                     outputClass = "warning";
