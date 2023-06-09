@@ -1,13 +1,19 @@
 <div class="row">
     <div class="col">
-        <div style="margin:10px 0;">
-            Theme:
-            <select id="theme" @onchange="ChangeTheme">
-                <option value="vs">Visual Studio</option>
-                <option value="vs-dark">Visual Studio Dark</option>
-                <option value="hc-black">High Contrast Black</option>
-            </select>
-        </div>
+        <label class="form-label" for="Language">Language:</label>
+        <select id="Language" name="Language"  class="form-control" data-val="true" data-val-required="The Language field is required." @bind="Language" disabled>
+            <option value="csharp">C#</option>
+            <option value="vb">VB.NET</option>
+            <option value="fsharp">F#</option>
+        </select>
+    </div>
+    <div class="col">
+        <label class="form-label" for="theme">Theme:</label>
+        <select id="theme" @onchange="ChangeTheme" class="form-control">
+            <option value="vs">Visual Studio</option>
+            <option value="vs-dark">Visual Studio Dark</option>
+            <option value="hc-black">High Contrast Black</option>
+        </select>
     </div>
 </div>
 <div class="row">
@@ -48,6 +54,9 @@
 
     [Parameter]
     public List<string> References { get; set; }
+    
+    [Parameter]
+    public string Language { get; set; }
 
     private List<string> SelectedIds = new();
     private List<string> DisabledIds = new();
@@ -58,6 +67,11 @@
 
     protected override void OnInitialized()
     {
+        // https://raw.githubusercontent.com/dotnet/roslyn/main/src/Compilers/Core/Portable/Compilation/ParseOptions.cs
+        // https://raw.githubusercontent.com/dotnet/roslyn/main/src/Compilers/Core/Portable/Symbols/LanguageNames.cs
+        // https://raw.githubusercontent.com/microsoft/monaco-editor/main/src/basic-languages/monaco.contribution.ts
+        Language = "csharp";
+        
         var required = new List<string>() { "System.dll", "System.Console.dll", "System.Private.CoreLib.dll", "System.Runtime.dll" }; 
         DisabledIds = required;
         SelectedIds = new List<string>(required);
