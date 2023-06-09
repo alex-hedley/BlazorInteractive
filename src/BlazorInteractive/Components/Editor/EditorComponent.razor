@@ -8,6 +8,19 @@
         </select>
     </div>
     <div class="col">
+        <label class="form-label" for="Compiler">Compiler:</label>
+        <select id="Compiler" name="Compiler" class="form-control" data-val="true" data-val-required="The Compiler field is required." @bind="Compiler" disabled>
+            <option value="Net45">.NET 4.7.2</option>
+            <option value="Roslyn">Roslyn 4.4</option>
+            <option value="NetLatest">Latest (.NET 7)</option>
+            <option value="NetCore31">.NET Core 3.1</option>
+            <option value="Net5">.NET 5</option>
+            <option value="Net6">.NET 6</option>
+            <option value="Net7">.NET 7</option>
+            <option value="Net8">.NET 8 Preview 3</option>
+        </select>
+    </div>
+    <div class="col">
         <label class="form-label" for="theme">Theme:</label>
         <select id="theme" @onchange="ChangeTheme" class="form-control">
             <option value="vs">Visual Studio</option>
@@ -58,6 +71,9 @@
     [Parameter]
     public string Language { get; set; }
 
+    [Parameter]
+    public string Compiler { get; set; }
+
     private List<string> SelectedIds = new();
     private List<string> DisabledIds = new();
     private StandaloneCodeEditor _editor = null!;
@@ -71,6 +87,9 @@
         // https://raw.githubusercontent.com/dotnet/roslyn/main/src/Compilers/Core/Portable/Symbols/LanguageNames.cs
         // https://raw.githubusercontent.com/microsoft/monaco-editor/main/src/basic-languages/monaco.contribution.ts
         Language = "csharp";
+
+        // Microsoft.CodeAnalysis.CSharp.LanguageVersion.Default
+        Compiler = "NetLatest";
         
         var required = new List<string>() { "System.dll", "System.Console.dll", "System.Private.CoreLib.dll", "System.Runtime.dll" }; 
         DisabledIds = required;
