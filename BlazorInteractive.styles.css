@@ -1,4 +1,9 @@
 /* /Components/Editor/CheckboxList.razor.rz.scp.css */
+div[b-k6s4og96xy] {
+    height: 500px;
+    overflow: scroll;
+    border: 1px gray solid;
+}
 /* /Components/Editor/EditorComponent.razor.rz.scp.css */
 [b-6dijnfhog3] #editor {
 	height: 500px;
@@ -177,4 +182,12 @@ div[b-thtwn92nhp] {
 
 .warning[b-thtwn92nhp] {
     color: orange;
+}
+/* /Pages/Index.razor.rz.scp.css */
+.container[b-htdlf97sw4], .container-fluid[b-htdlf97sw4], .container-lg[b-htdlf97sw4], .container-md[b-htdlf97sw4], .container-sm[b-htdlf97sw4], .container-xl[b-htdlf97sw4], .container-xxl[b-htdlf97sw4] {
+    width: 100%;
+    padding-right: 0;
+    padding-left: 0;
+    margin-right: 0;
+    margin-left: 0;
 }
