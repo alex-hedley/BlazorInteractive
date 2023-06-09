@@ -15,10 +15,11 @@
     </div>
     <div class="row">
         <div class="col-md-4">
-            <CheckboxList Data="@References"
-                TextField="@((item)=>item)"
-                ValueField="@((item)=>item)"
-                SelectedValues="@SelectedIds" /> 
+            <CheckboxList Data="@(SortedReferencesWithoutExtension())"
+                TextField="@((item) => item)"
+                ValueField="@((item) => item)"
+                SelectedValues="@SelectedIds"
+                DisabledValues="@DisabledIds" />
         </div>
         <div class="col-md-8">
             <StandaloneCodeEditor
@@ -39,17 +40,27 @@
 @code {
     [Parameter]
     public EventCallback<CompilationArgs> OnCompile { get; set; }
-    
+
     [Parameter]
     public List<string> References { get; set; }
-    
+
     private List<string> SelectedIds = new List<string>();
+    private List<string> DisabledIds = new List<string>();
     private StandaloneCodeEditor _editor = null!;
     private CancellationTokenSource? _cts;
     private bool CanCancel = false;
-    
-    //protected override async Task OnInitializedAsync()
-    //{}
+
+    protected override void OnInitialized()
+    {
+        var required = new List<string>() { "System", "System.Console", "System.Private.CoreLib", "System.Runtime" }; 
+        DisabledIds = required;
+        SelectedIds = required;
+    }
+
+    private List<string> SortedReferencesWithoutExtension()
+    {
+        return References.Select(r => r.TrimEnd(".dll")).OrderBy(a => a).ToList();
+    }
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
@@ -72,7 +83,7 @@
             await OnCompile.InvokeAsync(args);
             StateHasChanged();
         }
-        finally 
+        finally
         {
             CanCancel = false;
         }

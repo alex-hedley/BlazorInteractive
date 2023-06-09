@@ -20,4 +20,8 @@ builder.Services.AddHttpClient<IAssemblyAccessor<ImmutableArray<byte>>, BlazorAs
     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
 });
 
+builder.Services.AddHttpClient<IReferenceFilter, BlazorReferenceFilter>(client => {
+    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+});
+
 await builder.Build().RunAsync();

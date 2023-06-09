@@ -1,12 +1,11 @@
-﻿@using System.Reflection;
-
-@using BlazorInteractive.Components.Editor
+﻿@using BlazorInteractive.Components.Editor
 @using BlazorInteractive.Components.Output
 
 @page "/"
 
 @inject ICompiler CodeCompiler
 @inject IAssemblyInvoker AssemblyInvoker
+@inject IReferenceFilter ReferenceFilter
 
 <PageTitle>Index</PageTitle>
 
@@ -28,24 +27,26 @@
     private string? outputClass = string.Empty;
     private List<string> References = new List<string>();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        var imports = Assembly.GetEntryAssembly()?.GetReferencedAssemblies().Select(Assembly.Load).ToList();
-        imports?.Add(typeof(object).Assembly);
-        imports?.Add(typeof(Console).Assembly);
-        imports?.Add(typeof(Enumerable).Assembly);
-        
-        References = imports?
-                        .Select(a => a.GetName().Name!)
-                        .Distinct()
-                        .OrderBy(a => a)
-                        .ToList();
+        var referencesResult = await ReferenceFilter.GetReferencesAsync(CancellationToken.None);
+        referencesResult.Switch(
+            references => {
+                References = references.ToList();
+            },
+            failure => {
+                //TODO: Show error toast
+            },
+            cancelled => {
+                //TODO: Do nothing
+            }
+        );
     }
-    
+
     private async Task OnCompileAsync(CompilationArgs args)
     {
         output = string.Empty;
-        
+
         const string sourceCodeFormat = @"
         using System;
 
@@ -62,10 +63,10 @@
         ";
 
         var sourceCode = string.Format(sourceCodeFormat, args.SourceCode);
-        
+
         await Task.Run(async () => {
             var compilationResult = await CodeCompiler.CompileAsync(sourceCode, args.References, args.CancellationToken);
-        
+
             output = compilationResult.Match(
                 assembly => {
                     outputClass = "success";

@@ -1,6 +1,5 @@
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
-using System.Text.Json;
 
 using BlazorInteractive.Compilation;
 using BlazorInteractive.Compilation.Results;
@@ -29,35 +28,9 @@ public class BlazorAssemblyAccessor : IAssemblyAccessor<ImmutableArray<byte>>
 
         try
         {
-            // https://stackoverflow.com/a/73944260
-            using var response = await _httpClient.GetAsync($"_framework/blazor.boot.json", cancellationToken);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                return new Failure("blazor.boot.json failed to load");
-            }
-
-            var json = await response.Content.ReadAsStringAsync(cancellationToken);
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var bootstrap = JsonSerializer.Deserialize<BootstrapInfo>(json, options);
-            if (bootstrap is null)
-            {
-                return new Failure("No Assemblies found in blazor.boot.json");
-            }
-
-            _logger.LogInformation("Assemblies total {Count}", (bootstrap.Assemblies() ?? Array.Empty<string>()).Count());
-
             var assemblies = new List<ImmutableArray<byte>>();
 
-            var filteredAssemblies = bootstrap.Assemblies(importNames);
-            if (filteredAssemblies is null)
-            {
-                return new Failure($"No assemblies found for {nameof(importNames)}");
-            }
-
-            _logger.LogInformation("Filtered assemblies total {Count}", filteredAssemblies.Count());
-
-            foreach(var assemblyName in filteredAssemblies)
+            foreach(var assemblyName in importNames)
             {
                 var assemblyUrl = $"./_framework/{assemblyName}";
                 _logger.LogInformation($"Loading DLL from {assemblyUrl}");
