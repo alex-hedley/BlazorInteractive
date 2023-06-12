@@ -1,10 +1,18 @@
 @import '_content/Blazored.Toast/Blazored.Toast.bundle.scp.css';
 
 /* /Components/Editor/CheckboxList.razor.rz.scp.css */
-div[b-k6s4og96xy] {
+div.checkboxlist[b-k6s4og96xy] {
     height: 500px;
     overflow: scroll;
     border: 1px gray solid;
+}
+
+div.form-check[b-k6s4og96xy] {
+    margin-left: 5px;
+}
+
+p#title[b-k6s4og96xy] {
+    padding-left: 5px;
 }
 /* /Components/Editor/EditorComponent.razor.rz.scp.css */
 [b-6dijnfhog3] #editor {
