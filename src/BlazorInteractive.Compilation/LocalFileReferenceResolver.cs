@@ -20,9 +20,9 @@ public class LocalFileReferenceResolver : IReferenceResolver
         if (cancellationToken.IsCancellationRequested) {
             return new Cancelled();
         }
-        
+
         try
-        {    
+        {
             var assembliesResult = await _assemblyAccessor.GetAsync(importNames, cancellationToken);
 
             result = assembliesResult
@@ -30,11 +30,11 @@ public class LocalFileReferenceResolver : IReferenceResolver
                     assemblies => {
                         return assemblies
                             .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location))
-                            .Select(a => new Reference(MetadataReference.CreateFromFile(a.Location)))
+                            .Select(a => new Reference(GetAssemblyNamespaces(a), MetadataReference.CreateFromFile(a.Location)))
                             .Cast<IReference>()
                             .ToList()
                             .AsReadOnly();
-                    }, 
+                    },
                     failure => failure,
                     cancelled => cancelled
                 );
@@ -42,7 +42,13 @@ public class LocalFileReferenceResolver : IReferenceResolver
         } catch (Exception ex) {
             result = new Failure(ex, $"{ex.Message}");
         }
-        
+
         return result;
+    }
+
+    private IEnumerable<string?> GetAssemblyNamespaces(Assembly assembly)
+    {
+        return assembly.GetTypes()
+            .Select(t => t.Namespace);
     }
 }

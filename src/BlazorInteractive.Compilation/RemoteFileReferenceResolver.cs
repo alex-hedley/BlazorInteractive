@@ -1,6 +1,8 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using System.Collections.Immutable;
+using System.Reflection;
+
 using BlazorInteractive.Compilation.Results;
 
 namespace BlazorInteractive.Compilation;
@@ -34,7 +36,7 @@ public class RemoteFileReferenceResolver : IReferenceResolver
         return assemblyBytes.Match<ReferenceResult>(
             assemblies => {
                 return assemblies
-                    .Select(a => new Reference(MetadataReference.CreateFromImage(a)))
+                    .Select(a => new Reference(GetAssemblyNamespaces(a), MetadataReference.CreateFromImage(a)))
                     .Cast<IReference>()
                     .ToList()
                     .AsReadOnly();
@@ -42,5 +44,12 @@ public class RemoteFileReferenceResolver : IReferenceResolver
             failure => failure,
             cancelled => cancelled
         );
+    }
+
+    private IEnumerable<string?> GetAssemblyNamespaces(ImmutableArray<byte> assemblyBytes)
+    {
+        return Assembly
+            .Load(assemblyBytes.ToArray()).GetTypes()
+            .Select(t => t.Namespace);
     }
 }

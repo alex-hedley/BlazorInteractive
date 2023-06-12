@@ -1,5 +1,8 @@
 @typeparam TItem
 <div class="checkboxlist" style=@Style>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" @onchange="eventArgs => { SelectAll(); }" /> Select All
+    </div>
     <p id="title">Namespaces:</p>
     @if (Data != null)
     {
@@ -28,6 +31,16 @@
         }
     }
     @ChildContent
+</div>
+
+<div id="SelectedItems">
+    <h2>Selected Namespaces:</h2>
+    <ul>
+    @foreach (var item in SelectedValues)
+    {
+        <li>@item</li>
+    }
+    </ul>
 </div>
 
 @code {
@@ -71,5 +84,10 @@
             }
         }
         StateHasChanged();
+    }
+
+    public void SelectAll()
+    {
+        SelectedValues = Data.Where(i => i is not null).Select(i => ValueField?.Invoke(i).ToString()).ToList();
     }
 }
