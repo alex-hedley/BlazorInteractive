@@ -1,5 +1,13 @@
-div {
+div.checkboxlist {
     height: 500px;
     overflow: scroll;
     border: 1px gray solid;
+}
+
+div.form-check {
+    margin-left: 5px;
+}
+
+p#title {
+    padding-left: 5px;
 }

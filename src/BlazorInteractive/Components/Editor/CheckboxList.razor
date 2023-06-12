@@ -1,6 +1,6 @@
 @typeparam TItem
-<div style=@Style>
-    <p>Namespaces:</p>
+<div class="checkboxlist" style=@Style>
+    <p id="title">Namespaces:</p>
     @if (Data != null)
     {
         foreach (var item in Data.Where(i => i is not null))
@@ -10,19 +10,21 @@
             var isChecked = SelectedValues.Contains(value!);
             var isDisabled = DisabledValues.Contains(value!);
             
-            <input
-                id="@($"{text}Checkbox")"
-                type="checkbox"
-                checked=@isChecked
-                disabled=@isDisabled
-                class="form-check-input"
-                @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }"
-                value="@value"
-                /> @($" {text}")
-            @* <label class="form-check-label" for="@($"{text}Checkbox")"> *@
-            @*     @text *@
-            @* </label> *@
-            <br />
+            <div class="form-check">
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="@($"{text}Checkbox")"
+                    checked=@isChecked
+                    disabled=@isDisabled
+                    @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }"
+                    value="@value"
+                    />
+                
+                <label class="form-check-label" for="@($"{text}Checkbox")">
+                    @($" {text}")
+                </label>
+            </div>
         }
     }
     @ChildContent
