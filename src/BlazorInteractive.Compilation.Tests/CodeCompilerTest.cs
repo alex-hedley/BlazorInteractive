@@ -4,7 +4,7 @@ using BlazorInteractive.Compilation.Results;
 
 namespace BlazorInteractive.Compilation.Tests;
 
-using static BlazorInteractive.Compilation.Tests.CodeCompilerTestData;
+using static CodeCompilerTestData;
 
 public class CodeCompilerTest
 {

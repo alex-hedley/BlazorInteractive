@@ -1,5 +1,4 @@
 using BlazorInteractive.Compilation.Results;
-using Microsoft.CodeAnalysis;
 
 namespace BlazorInteractive.Compilation;
 
@@ -16,7 +15,7 @@ public class CodeCompiler : ICompiler
         _assemblyLoader = assemblyLoader;
     }
 
-    public async Task<Results.CompilationResult> CompileAsync(string sourceCode, ICollection<string>? imports, CancellationToken cancellationToken = default)
+    public async Task<CompilationResult> CompileAsync(string sourceCode, ICollection<string>? imports, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(sourceCode))
         {
@@ -45,7 +44,7 @@ public class CodeCompiler : ICompiler
                     return compiler.Match(
                         compilation =>
                         {
-                            return _assemblyLoader.Load(compilation).Match<Results.CompilationResult>(
+                            return _assemblyLoader.Load(compilation).Match<CompilationResult>(
                                 assembly => assembly,
                                 failure => failure
                             );

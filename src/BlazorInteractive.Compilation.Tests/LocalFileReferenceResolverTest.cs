@@ -1,12 +1,10 @@
-
-using Microsoft.CodeAnalysis;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using BlazorInteractive.Compilation.Results;
 
 namespace BlazorInteractive.Compilation.Tests;
 
-using static BlazorInteractive.Compilation.Tests.LocalFileReferenceResolverTestData;
+using static LocalFileReferenceResolverTestData;
 
 public class LocalFileReferenceResolverTest
 {

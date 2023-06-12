@@ -6,11 +6,11 @@ namespace BlazorInteractive.Compilation;
 
 public sealed class LocalAppDomainAssemblyAccessor : IAssemblyAccessor<Assembly>
 {
-    public Task<Results.AssemblyResult<Assembly>> GetAsync(IEnumerable<string> importNames, CancellationToken cancellationToken)
+    public Task<AssemblyResult<Assembly>> GetAsync(IEnumerable<string> importNames, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
-            return Task.FromResult<Results.AssemblyResult<Assembly>>(new Cancelled());
+            return Task.FromResult<AssemblyResult<Assembly>>(new Cancelled());
         }
 
         var assemblies = AppDomain.CurrentDomain
@@ -20,7 +20,7 @@ public sealed class LocalAppDomainAssemblyAccessor : IAssemblyAccessor<Assembly>
             .AsReadOnly();
 
         return !assemblies.Any()
-            ? Task.FromResult<Results.AssemblyResult<Assembly>>(new Failure(new AppDomainAssemblyException(), "Unable to load AppDomain assemblies"))
-            : Task.FromResult<Results.AssemblyResult<Assembly>>(assemblies);
+            ? Task.FromResult<AssemblyResult<Assembly>>(new Failure(new AppDomainAssemblyException(), "Unable to load AppDomain assemblies"))
+            : Task.FromResult<AssemblyResult<Assembly>>(assemblies);
     }
 }

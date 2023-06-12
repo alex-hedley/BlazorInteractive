@@ -13,9 +13,9 @@ public class LocalFileReferenceResolver : IReferenceResolver
         _assemblyAccessor = assemblyAccessor;
     }
 
-    public async Task<Results.ReferenceResult> ResolveAsync(IEnumerable<string> importNames, CancellationToken cancellationToken = default)
+    public async Task<ReferenceResult> ResolveAsync(IEnumerable<string> importNames, CancellationToken cancellationToken = default)
     {
-        Results.ReferenceResult result;
+        ReferenceResult result;
 
         if (cancellationToken.IsCancellationRequested) {
             return new Cancelled();
@@ -26,7 +26,7 @@ public class LocalFileReferenceResolver : IReferenceResolver
             var assembliesResult = await _assemblyAccessor.GetAsync(importNames, cancellationToken);
 
             result = assembliesResult
-                .Match<Results.ReferenceResult>(
+                .Match<ReferenceResult>(
                     assemblies => {
                         return assemblies
                             .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location))

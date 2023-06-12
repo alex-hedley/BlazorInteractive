@@ -16,9 +16,9 @@ public class RemoteFileReferenceResolver : IReferenceResolver
         _logger = logger;
     }
 
-    public async Task<Results.ReferenceResult> ResolveAsync(IEnumerable<string> importNames, CancellationToken cancellationToken = default)
+    public async Task<ReferenceResult> ResolveAsync(IEnumerable<string> importNames, CancellationToken cancellationToken = default)
     {
-        Results.ReferenceResult result;
+        ReferenceResult result;
 
         if (cancellationToken.IsCancellationRequested) {
             result = new Cancelled();
@@ -31,7 +31,7 @@ public class RemoteFileReferenceResolver : IReferenceResolver
 
         _logger.LogInformation("Assemblies loaded");
 
-        return assemblyBytes.Match<Results.ReferenceResult>(
+        return assemblyBytes.Match<ReferenceResult>(
             assemblies => {
                 return assemblies
                     .Select(a => new Reference(MetadataReference.CreateFromImage(a)))
