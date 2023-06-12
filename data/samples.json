@@ -1,0 +1,15 @@
+[
+    {
+        "Name": "simple",
+        "additionalNamespaces": [],
+        "sourceCode": "Console.WriteLine(\"Hello, World!\");"
+    },
+    {
+        "Name": "fib",
+        "additionalNamespaces": [
+            "System.Collections.Generic",
+            "System.Linq"
+        ],
+        "sourceCode": "IEnumerable<int> Fib()\n{\n\tvar a = 0;\n\tvar b = 1;\n\n\tyield return a;\n\n\twhile (true)\n\t{\n\t\tyield return b;\n\t\tvar c = a + b;\n\t\ta = b;\n\t\tb = c;\n\t}\n}\n\nforeach (var num in Fib().Take(10)){\n\tConsole.WriteLine(num);\n}"
+    }
+]
