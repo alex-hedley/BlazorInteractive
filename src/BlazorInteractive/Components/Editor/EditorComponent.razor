@@ -1,5 +1,10 @@
 <div class="row">
     <div class="col">
+        <h1>Code Compiler</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
         <label class="form-label" for="Language">Language:</label>
         <select id="Language" name="Language"  class="form-control" data-val="true" data-val-required="The Language field is required." @bind="Language" disabled>
             <option value="csharp">C#</option>
@@ -28,12 +33,11 @@
             <option value="hc-black">High Contrast Black</option>
         </select>
     </div>
-</div>
-<div class="row">
     <div class="col">
-        <h1>Code Compiler</h1>
+        <Samples />
     </div>
 </div>
+<br />
 <div class="row">
     <div class="col-md-4">
         <CheckboxList Data="@(SortedReferencesWithoutExtension())"

@@ -18,6 +18,8 @@ builder.Services.AddScoped<IAssemblyLoader, AssemblyLoader>();
 builder.Services.AddScoped<ICSharpCompiler, CSharpCompiler>();
 builder.Services.AddBlazoredToast();
 
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
 builder.Services.AddHttpClient<IAssemblyAccessor<ImmutableArray<byte>>, BlazorAssemblyAccessor>(client => {
     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
 });

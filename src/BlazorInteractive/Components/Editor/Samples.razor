@@ -1,0 +1,38 @@
+@inject HttpClient Http
+
+<div class="samples-dropdown">
+    <label class="form-label" for="Samples">Samples:</label>
+    <select id="Samples" name="Samples" class="form-control" @onchange="ChangeSample">
+        <option value="----">Please Select</option>
+        <option value="simple">Simple</option>
+        <option value="fib">Fib</option>
+    </select>
+</div>
+
+@code {
+    private Sample[]? samples;
+
+    protected override async Task OnInitializedAsync()
+    {
+        samples = await Http.GetFromJsonAsync<Sample[]>("data/samples.json");
+    }
+
+    private async Task ChangeSample(ChangeEventArgs e)
+    {
+        var chosenItem = e.Value?.ToString();
+        Console.WriteLine($"setting sample to: {chosenItem}");
+        //string value = await _editor.GetValue();
+        var chosenSample = samples.FirstOrDefault(s => s.Name == chosenItem);
+        Console.WriteLine(chosenSample.SourceCode);
+        chosenSample.AdditionalNamespaces.ForEach(Console.WriteLine);
+    }
+
+    public class Sample
+    {
+        public string Name { get; set; }
+
+        public List<string> AdditionalNamespaces { get; set; }
+
+        public string SourceCode { get; set; }
+    }
+}
