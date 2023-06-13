@@ -34,7 +34,7 @@
         </select>
     </div>
     <div class="col">
-        <Samples />
+        <Samples OnSampleChanged="@SampleChanged" />
     </div>
 </div>
 <br />
@@ -67,7 +67,7 @@
 
 @code {
     [Parameter]
-    public EventCallback<CompilationArgs> OnCompile { get; set; }
+    public EventCallback<CompilationArgs> OnCompileChanged { get; set; }
 
     [Parameter]
     public List<string> References { get; set; } = new();
@@ -78,6 +78,7 @@
     [Parameter]
     public string Compiler { get; set; }
 
+    private readonly List<string> Required = new() { "System.dll", "System.Console.dll", "System.Private.CoreLib.dll", "System.Runtime.dll" }; 
     private List<string> SelectedIds = new();
     private List<string> DisabledIds = new();
     private StandaloneCodeEditor _editor = null!;
@@ -95,9 +96,8 @@
         // Microsoft.CodeAnalysis.CSharp.LanguageVersion.Default
         Compiler = "NetLatest";
         
-        var required = new List<string>() { "System.dll", "System.Console.dll", "System.Private.CoreLib.dll", "System.Runtime.dll" }; 
-        DisabledIds = required;
-        SelectedIds = new List<string>(required);
+        DisabledIds = Required;
+        SelectedIds = new List<string>(Required);
 
         // Style = "height: 500px; overflow:scroll;";
     }
@@ -128,7 +128,7 @@
         try
         {
             CanCancel = true;
-            await OnCompile.InvokeAsync(args);
+            await OnCompileChanged.InvokeAsync(args);
             StateHasChanged();
         }
         finally
@@ -148,5 +148,11 @@
     {
         Console.WriteLine($"setting theme to: {e.Value?.ToString()}");
         await Global.SetTheme(e.Value?.ToString());
+    }
+
+    private void SampleChanged(SampleArgs sample)
+    {
+        _editor.SetValue(sample.SourceCode);
+        SelectedIds = Required.Union(sample.AdditionalNamespaces).ToList();
     }
 }

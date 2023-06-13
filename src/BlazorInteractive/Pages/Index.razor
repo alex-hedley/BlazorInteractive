@@ -11,7 +11,7 @@
 <PageTitle>Index</PageTitle>
 
 <div class="container">
-    <EditorComponent OnCompile="OnCompileAsync" References="References"></EditorComponent>
+    <EditorComponent OnCompileChanged="OnCompileAsync" References="References"></EditorComponent>
     <br />
     <OutputComponent Content="@output" OutputClass="@outputClass"></OutputComponent>
 </div>
@@ -63,7 +63,6 @@
                 assembly => {
                     outputClass = "success";
                     var output = AssemblyInvoker.Invoke(assembly, "BlazorInteractive.Program", "Main");
-                    @* output = output.Replace("\n", "<br />"); *@
                     return output;
                 },
                 @void => {
@@ -72,7 +71,6 @@
                 },
                 failure => {
                     outputClass = "error";
-                    //return failure.Exception?.Message;
                     return failure.errorMessage;
                 },
                 cancelled => {
