@@ -21,17 +21,16 @@ public class CSharpCompiler : ICSharpCompiler
         }
 
         // remove: debug
-        IEnumerable<string> usings = references.SelectMany(r => r.DistinctNamespaces()).Distinct().Where(s => s is not null).Where(s => s.StartsWith("System")).Cast<string>().OrderBy(s => s).ToList();
-        var namespaceList = string.Join(Environment.NewLine, usings.Select(u => $"using {u};"));
+        // IEnumerable<string> usings = references.SelectMany(r => r.DistinctNamespaces()).Distinct().Where(s => s is not null).Where(s => s.StartsWith("System")).Cast<string>().OrderBy(s => s).ToList();
+        // var namespaceList = string.Join(Environment.NewLine, usings.Select(u => $"using {u};"));
 
         var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Default);
-        var parsedSyntaxTree = SyntaxFactory.ParseSyntaxTree(namespaceList + Environment.NewLine + sourceCode, parseOptions);
+        var parsedSyntaxTree = SyntaxFactory.ParseSyntaxTree(sourceCode, parseOptions);
 
         var options = new CSharpCompilationOptions(
             OutputKind.DynamicallyLinkedLibrary,
             concurrentBuild: false,
-            optimizationLevel: OptimizationLevel.Debug,
-            usings: usings
+            optimizationLevel: OptimizationLevel.Debug
         );
 
         ICSharpCompilationBuilder builder = new CSharpCompilationBuilder();

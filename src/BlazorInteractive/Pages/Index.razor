@@ -1,5 +1,6 @@
 ﻿@using BlazorInteractive.Components.Editor
 @using BlazorInteractive.Components.Output
+@using System.Text.RegularExpressions
 
 @page "/"
 
@@ -42,19 +43,32 @@
         output = string.Empty;
 
         const string sourceCodeFormat = @"
+        using System;
+        {0}
+
         namespace BlazorInteractive
         {{
             public class Program
             {{
                 public static void Main()
                 {{
-                    {0}
+                    {1}
                 }}
             }}
         }}
         ";
 
-        var sourceCode = string.Format(sourceCodeFormat, args.SourceCode);
+        var lines = args.SourceCode.Split(System.Environment.NewLine);
+
+        var usingPattern = new Regex(@"^\s*using\s+([\w\d\.]+)\s*;\s*$");
+        var grouped = lines.GroupBy(line => usingPattern.IsMatch(line));
+        var usings = grouped.Where(group => group.Key).FirstOrDefault()?.Select(x => x);
+        var mainMethod = grouped.Where(group => !group.Key).FirstOrDefault()?.Select(x => x);
+
+        var sourceCode = string.Format(
+            sourceCodeFormat,
+            (usings is null) ? string.Empty : string.Join(System.Environment.NewLine, usings),
+            (mainMethod is null) ? string.Empty : string.Join(System.Environment.NewLine, mainMethod));
 
         await Task.Run(async () => {
             var compilationResult = await CodeCompiler.CompileAsync(sourceCode, args.References, args.CancellationToken);
