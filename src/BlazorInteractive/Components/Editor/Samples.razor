@@ -11,11 +11,11 @@
 
 @code {
     [Parameter]
-    public EventCallback<string> OnSampleChanged { get; set; }
+    public EventCallback<SampleArgs> OnSampleChanged { get; set; }
 
     private SampleArgs[]? _samples;
 
-    protected override async Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
         _samples = await Http.GetFromJsonAsync<SampleArgs[]>("data/samples.json");
     }
@@ -23,14 +23,8 @@
     private async Task ChangeSample(ChangeEventArgs e)
     {
         var chosenItem = e.Value?.ToString();
-        Console.WriteLine($"setting sample to: {chosenItem}");
-        //string value = await _editor.GetValue();
         var chosenSample = _samples.FirstOrDefault(s => s.Name == chosenItem);
-        Console.WriteLine(chosenSample.SourceCode);
-        chosenSample.AdditionalNamespaces.ForEach(Console.WriteLine);
-
         await OnSampleChanged.InvokeAsync(chosenSample);
     }
-
     
 }
