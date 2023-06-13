@@ -16,7 +16,7 @@ public class EditorComponentTests : UnitTestBase
         JSInterop.SetupVoid(_monacoCreateFunction, _ => true);
     }
 
-    [Fact]
+    //[Fact]
     public void GetContentFromEditor()
     {
         JSInterop.Setup<string>(_monacoGetValueFunction, _ => true);

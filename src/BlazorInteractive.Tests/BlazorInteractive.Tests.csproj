@@ -24,7 +24,7 @@
         </PackageReference>
     </ItemGroup>
 
-    <ItemGroup>
+    <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <ProjectReference Include="..\BlazorInteractive\BlazorInteractive.csproj" />
     </ItemGroup>
 

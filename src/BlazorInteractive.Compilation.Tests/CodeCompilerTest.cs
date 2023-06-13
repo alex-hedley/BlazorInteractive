@@ -43,13 +43,13 @@ public class CodeCompilerTest
     public async Task CompileAsync_WithCode_ReturnsSuccessWithResult()
     {
         var references = new Mock<IReference>();
-        var roc = new ReadOnlyCollection<IReference>(new List<IReference>() { references.Object });
+        var roc = new ReferenceCollection(new List<IReference>() { references.Object });
         _referenceResolver.Setup(r => r.ResolveAsync(_defaultImports, _defaultCancellationToken)).ReturnsAsync(roc);
 
         var csc = new Mock<ICSharpCompilation>();
         var wrapper = new CSharpCompilationWrapper();
         //_cSharpCompiler.Setup(c => c.Compile(_sourceCode, SystemAssembly, roc)).Returns(wrapper);
-        _cSharpCompiler.Setup(c => c.Compile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ReadOnlyCollection<IReference>>())).Returns(wrapper);
+        _cSharpCompiler.Setup(c => c.Compile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ReferenceCollection>())).Returns(wrapper);
 
         var dummyAssembly = typeof(CodeCompilerTest).Assembly;
         _assemblyLoader.Setup(a => a.Load(It.IsAny<ICSharpCompilation>())).Returns(dummyAssembly);

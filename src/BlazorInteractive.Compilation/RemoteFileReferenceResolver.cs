@@ -35,11 +35,11 @@ public class RemoteFileReferenceResolver : IReferenceResolver
 
         return assemblyBytes.Match<ReferenceResult>(
             assemblies => {
-                return assemblies
+                var references = assemblies
                     .Select(a => new Reference(GetAssemblyNamespaces(a), MetadataReference.CreateFromImage(a)))
                     .Cast<IReference>()
-                    .ToList()
-                    .AsReadOnly();
+                    .ToList();
+                return new ReferenceCollection(references);
             },
             failure => failure,
             cancelled => cancelled

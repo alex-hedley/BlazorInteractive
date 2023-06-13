@@ -27,13 +27,15 @@ public class LocalFileReferenceResolver : IReferenceResolver
 
             result = assembliesResult
                 .Match<ReferenceResult>(
-                    assemblies => {
-                        return assemblies
+                    assemblies =>
+                    {
+                        var references = assemblies
                             .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location))
-                            .Select(a => new Reference(GetAssemblyNamespaces(a), MetadataReference.CreateFromFile(a.Location)))
+                            .Select(a =>
+                                new Reference(GetAssemblyNamespaces(a), MetadataReference.CreateFromFile(a.Location)))
                             .Cast<IReference>()
-                            .ToList()
-                            .AsReadOnly();
+                            .ToList();
+                        return new ReferenceCollection(references);
                     },
                     failure => failure,
                     cancelled => cancelled
