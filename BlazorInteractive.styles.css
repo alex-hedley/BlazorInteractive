@@ -194,6 +194,11 @@ div[b-thtwn92nhp] {
 .warning[b-thtwn92nhp] {
     color: orange;
 }
+
+div#Output[b-thtwn92nhp] {
+    white-space: pre-line;
+}
+/* /Pages/About.razor.rz.scp.css */
 /* /Pages/Index.razor.rz.scp.css */
 .container[b-htdlf97sw4], .container-fluid[b-htdlf97sw4], .container-lg[b-htdlf97sw4], .container-md[b-htdlf97sw4], .container-sm[b-htdlf97sw4], .container-xl[b-htdlf97sw4], .container-xxl[b-htdlf97sw4] {
     width: 100%;
@@ -202,3 +207,4 @@ div[b-thtwn92nhp] {
     margin-right: 0;
     margin-left: 0;
 }
+/* /Pages/Info.razor.rz.scp.css */
