@@ -1,18 +1,29 @@
 @typeparam TItem
 <div class="checkboxlist" style=@Style>
+
+    @* <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">Search Term</span>
+        </div>
+        <input type="text" class="form-control" placeholder="Search Term" aria-label="Search Term" aria-describedby="basic-addon1" @bind="SearchTerm" />
+    </div> *@
+
     <div class="form-check">
-        <input class="form-check-input" type="checkbox" @onchange="eventArgs => { SelectAll(); }" /> Select All
+        <input class="form-check-input" type="checkbox" @onchange="eventArgs => { SelectAll(); }" /> <span style="color: red;">Select All</span>
     </div>
-    <p id="title">Namespaces:</p>
+    <p id="title"><strong>Namespaces:</strong> (<em>#: @Data.Count()</em>)</p>
     @if (Data != null)
     {
         foreach (var item in Data.Where(i => i is not null))
         {
+            
             var text = TextField?.Invoke(item);
             var value = ValueField?.Invoke(item).ToString();
             var isChecked = SelectedValues.Contains(value!);
             var isDisabled = DisabledValues.Contains(value!);
             
+            //if (!string.IsNullOrEmpty(SearchTerm) && !value.Contains(SearchTerm)) continue;
+
             <div class="form-check">
                 <input
                     class="form-check-input"
@@ -33,10 +44,12 @@
     @ChildContent
 </div>
 
-<div id="SelectedItems">
-    <h2>Selected Namespaces:</h2>
+<br />
+
+<div id="selectedItems">
+    <p><strong>Selected Namespaces:</strong> (<em>#: @SelectedValues.Count()</em>)</p>
     <ul>
-    @foreach (var item in SelectedValues)
+    @foreach (var item in SelectedValues.ToList().OrderBy(x => x))
     {
         <li>@item</li>
     }
@@ -66,6 +79,9 @@
 
     [Parameter]
     public List<string> DisabledValues { get; set; }
+
+    //[Parameter]
+    //public string? SearchTerm { get; set; }
 
     public void CheckboxClicked(string aSelectedId, object aChecked)
     {
