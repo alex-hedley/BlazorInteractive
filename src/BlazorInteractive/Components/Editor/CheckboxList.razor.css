@@ -11,3 +11,9 @@ div.form-check {
 p#title {
     padding-left: 5px;
 }
+
+div#selectedItems {
+    height: 200px;
+    overflow: scroll;
+    border: 1px gray solid;
+}
