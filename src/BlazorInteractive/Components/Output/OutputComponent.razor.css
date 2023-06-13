@@ -19,3 +19,7 @@ div {
 .warning {
     color: orange;
 }
+
+div#Output {
+    white-space: pre-line;
+}

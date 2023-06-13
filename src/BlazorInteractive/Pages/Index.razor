@@ -62,7 +62,9 @@
             output = compilationResult.Match(
                 assembly => {
                     outputClass = "success";
-                    return AssemblyInvoker.Invoke(assembly, "BlazorInteractive.Program", "Main");
+                    var output = AssemblyInvoker.Invoke(assembly, "BlazorInteractive.Program", "Main");
+                    @* output = output.Replace("\n", "<br />"); *@
+                    return output;
                 },
                 @void => {
                     outputClass = "";
