@@ -1,52 +1,59 @@
 @typeparam TItem
-<div class="checkboxlist" style=@Style>
 
-    @* <div class="input-group mb-3">
-        <div class="input-group-prepend">
-            <span class="input-group-text" id="basic-addon1">Search Term</span>
-        </div>
-        <input type="text" class="form-control" placeholder="Search Term" aria-label="Search Term" aria-describedby="basic-addon1" @bind="SearchTerm" />
-    </div> *@
-
-    <div class="form-check">
-        <input class="form-check-input" type="checkbox" @onchange="eventArgs => { SelectAll(); }" /> <span style="color: red;">Select All</span>
+<div class="card">
+    <div class="card-header">
+        <button class="btn btn-outline-dark" @onclick="ToggleChecklist">
+            Namespaces: @SelectedValues.Count/@Data.Count() selected
+        </button>
     </div>
-    <p id="title"><strong>Namespaces:</strong> (<em>#: @Data.Count()</em>)</p>
-    @if (Data != null)
-    {
-        foreach (var item in Data.Where(i => i is not null))
-        {
-            
-            var text = TextField?.Invoke(item);
-            var value = ValueField?.Invoke(item).ToString();
-            var isChecked = SelectedValues.Contains(value!);
-            var isDisabled = DisabledValues.Contains(value!);
-            
-            //if (!string.IsNullOrEmpty(SearchTerm) && !value.Contains(SearchTerm)) continue;
+    <div class="card-body" style=@_cardStyle>
+        <div class="checkboxlist" style=@Style>
 
-            <div class="form-check">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="@($"{text}Checkbox")"
-                    checked=@isChecked
-                    disabled=@isDisabled
-                    @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }"
-                    value="@value"
-                    />
-                
-                <label class="form-check-label" for="@($"{text}Checkbox")">
-                    @($" {text}")
-                </label>
+            <div class="input-group mb-3">
+                @* <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Search Term</span>
+                </div> *@
+                <input type="text" class="form-control" placeholder="Search Term" aria-label="Search Term" @bind="SearchTerm" @bind:event="oninput" />
             </div>
-        }
-    }
-    @ChildContent
+
+            @if (Data != null)
+            {
+                foreach (var item in Data.Where(i => i is not null))
+                {
+
+                    var text = TextField?.Invoke(item);
+                    var value = ValueField?.Invoke(item).ToString();
+                    var isChecked = SelectedValues.Contains(value!);
+                    var isDisabled = DisabledValues.Contains(value!);
+
+                    if (!string.IsNullOrEmpty(SearchTerm) && !value.Contains(SearchTerm)) continue;
+
+                    <div class="form-check">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="@($"{text}Checkbox")"
+                            checked=@isChecked
+                            disabled=@isDisabled
+                            @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }"
+                            value="@value"
+                            />
+                        
+                        <label class="form-check-label" for="@($"{text}Checkbox")">
+                            @($" {text}")
+                        </label>
+                    </div>
+                }
+            }
+            @ChildContent
+        </div>
+    </div>
 </div>
+
 
 <br />
 
-<div id="selectedItems">
+@* <div id="selectedItems">
     <p><strong>Selected Namespaces:</strong> (<em>#: @SelectedValues.Count()</em>)</p>
     <ul>
     @foreach (var item in SelectedValues.ToList().OrderBy(x => x))
@@ -54,9 +61,18 @@
         <li>@item</li>
     }
     </ul>
-</div>
+</div> *@
 
 @code {
+    private bool _showChecklist { get; set; } = true;
+    private string _cardStyle { get; set; } = string.Empty;
+
+    private void ToggleChecklist()
+    {
+        _showChecklist = !_showChecklist;
+        _cardStyle = _showChecklist ? string.Empty : "display: none;";
+    }
+
     // How To Create A Checkbox List In Blazor - S.Ravi Kumar - Jul 17, 2020
     // https://www.c-sharpcorner.com/article/how-to-create-a-checkbox-list-in-blazor/
     [Parameter]
@@ -81,7 +97,7 @@
     public List<string> DisabledValues { get; set; }
 
     //[Parameter]
-    //public string? SearchTerm { get; set; }
+    public string? SearchTerm { get; set; }
 
     public void CheckboxClicked(string aSelectedId, object aChecked)
     {

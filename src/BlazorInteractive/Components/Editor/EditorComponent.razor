@@ -104,7 +104,7 @@
     {
         return References.Select(r => new  { reference = r, referenceNoExt = r.TrimEnd(".dll") })
             .Select(c => (Reference: c.reference, ReferenceNoExt: c.referenceNoExt)) 
-            .OrderBy(a => a.Reference)
+            .OrderBy(a => a.ReferenceNoExt)
             .ToList();
     }
 
