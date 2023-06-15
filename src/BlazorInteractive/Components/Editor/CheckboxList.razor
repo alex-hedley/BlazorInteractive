@@ -26,7 +26,7 @@
                     var isChecked = SelectedValues.Contains(value!);
                     var isDisabled = DisabledValues.Contains(value!);
 
-                    if (!string.IsNullOrEmpty(SearchTerm) && !value.Contains(SearchTerm)) continue;
+                    if (!string.IsNullOrEmpty(SearchTerm) && !value.ToLower().Contains(SearchTerm.ToLower())) continue;
 
                     <div class="form-check">
                         <input
