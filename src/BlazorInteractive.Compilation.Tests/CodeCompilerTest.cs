@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reflection;
 using BlazorInteractive.Compilation.Results;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace BlazorInteractive.Compilation.Tests;
 
@@ -15,6 +16,7 @@ public class CodeCompilerTest
     private readonly CancellationToken _defaultCancellationToken;
     private readonly CodeCompiler _compiler;
     private readonly List<string> _defaultImports;
+    private readonly LanguageVersion _languageVersion;
 
     private readonly string _sourceCode = string.Empty;
     private static readonly Assembly[] _appDomainAssemblies;
@@ -32,6 +34,7 @@ public class CodeCompilerTest
         _defaultCancellationToken = CancellationToken.None;
         _cSharpCompiler = new Mock<ICSharpCompiler>();
         _assemblyLoader = new Mock<IAssemblyLoader>();
+        _languageVersion = LanguageVersion.Default;
 
         _sourceCode = "Console.WriteLine(\"Hello, World!\");";
 
@@ -49,20 +52,20 @@ public class CodeCompilerTest
         var csc = new Mock<ICSharpCompilation>();
         var wrapper = new CSharpCompilationWrapper();
         //_cSharpCompiler.Setup(c => c.Compile(_sourceCode, SystemAssembly, roc)).Returns(wrapper);
-        _cSharpCompiler.Setup(c => c.Compile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ReferenceCollection>())).Returns(wrapper);
+        _cSharpCompiler.Setup(c => c.Compile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ReferenceCollection>(), It.IsAny<LanguageVersion>())).Returns(wrapper);
 
         var dummyAssembly = typeof(CodeCompilerTest).Assembly;
         _assemblyLoader.Setup(a => a.Load(It.IsAny<ICSharpCompilation>())).Returns(dummyAssembly);
 
         var sourceCode = "1 + 1";
-        var result = await _compiler.CompileAsync(sourceCode, _defaultImports);
+        var result = await _compiler.CompileAsync(sourceCode, _defaultImports, _languageVersion);
         result.Value.Should().BeAssignableTo<Assembly>();
     }
 
     [Fact]
     public async Task CompileAsync_WithCodeWithNoResult_ReturnsVoid()
     {
-        var result = await _compiler.CompileAsync(_sourceCode, _defaultImports);
+        var result = await _compiler.CompileAsync(_sourceCode, _defaultImports, _languageVersion);
         result.Value.Should().BeOfType<Failure>();
     }
 
@@ -71,7 +74,7 @@ public class CodeCompilerTest
     {
         var sourceCode = string.Empty;
 
-        var result = await _compiler.CompileAsync(sourceCode, _defaultImports);
+        var result = await _compiler.CompileAsync(sourceCode, _defaultImports, _languageVersion);
         result.Value.Should().BeOfType<Failure>();
     }
 
@@ -80,7 +83,7 @@ public class CodeCompilerTest
     {
         var imports = new List<string>();
 
-        var result = await _compiler.CompileAsync(_sourceCode, imports);
+        var result = await _compiler.CompileAsync(_sourceCode, imports, _languageVersion);
         result.Value.Should().BeOfType<Failure>();
     }
 
@@ -91,7 +94,7 @@ public class CodeCompilerTest
         var cancellationToken = cancellationTokenSource.Token;
 
         cancellationTokenSource.Cancel();
-        var result = await _compiler.CompileAsync(_sourceCode, _defaultImports, cancellationToken);
+        var result = await _compiler.CompileAsync(_sourceCode, _defaultImports, _languageVersion, cancellationToken);
         result.Value.Should().BeOfType<Cancelled>();
     }
 
@@ -99,7 +102,7 @@ public class CodeCompilerTest
     public async Task CompileAsync_WithBadCode_ThrowsCompilationErrorException()
     {
         var sourceCode = "lolCat";
-        var result = await _compiler.CompileAsync(sourceCode, _defaultImports);
+        var result = await _compiler.CompileAsync(sourceCode, _defaultImports, _languageVersion);
 
         result.Value.As<Failure>();
     }
