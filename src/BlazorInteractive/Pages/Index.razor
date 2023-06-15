@@ -13,7 +13,14 @@
 <div class="container">
     <EditorComponent OnCompileChanged="OnCompileAsync" References="References"></EditorComponent>
     <br />
-    <OutputComponent Content="@output" OutputClass="@outputClass"></OutputComponent>
+    <div class="row">
+        <div class="col col-9">
+            <OutputComponent Content="@output" OutputClass="@outputClass"></OutputComponent>
+        </div>
+        <div class="col col-3">
+            <Stats />
+        </div>
+    </div>
 </div>
 
 @code {
