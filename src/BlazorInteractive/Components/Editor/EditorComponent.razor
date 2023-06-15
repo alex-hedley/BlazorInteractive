@@ -1,3 +1,5 @@
+@using Microsoft.CodeAnalysis.CSharp;
+
 <div class="row">
     <div class="col">
         <h1>Code Compiler</h1>
@@ -13,17 +15,7 @@
         </select>
     </div>
     <div class="col">
-        <label class="form-label" for="Compiler">Compiler:</label>
-        <select id="Compiler" name="Compiler" class="form-control" data-val="true" data-val-required="The Compiler field is required." @bind="Compiler" disabled>
-            <option value="Net45">.NET 4.7.2</option>
-            <option value="Roslyn">Roslyn 4.4</option>
-            <option value="NetLatest">Latest (.NET 7)</option>
-            <option value="NetCore31">.NET Core 3.1</option>
-            <option value="Net5">.NET 5</option>
-            <option value="Net6">.NET 6</option>
-            <option value="Net7">.NET 7</option>
-            <option value="Net8">.NET 8 Preview 3</option>
-        </select>
+        <CompilerVersion OnCompilerChanged="@CompilerChanged" />
     </div>
     <div class="col">
         <label class="form-label" for="theme">Theme:</label>
@@ -71,12 +63,12 @@
 
     [Parameter]
     public List<string> References { get; set; } = new();
-    
-    [Parameter]
-    public string Language { get; set; }
 
     [Parameter]
-    public string Compiler { get; set; }
+    public string? Language { get; set; }
+
+    [Parameter]
+    public LanguageVersion CompilerVersion { get; set; }
 
     private readonly List<string> Required = new() { "System.dll", "System.Console.dll", "System.Private.CoreLib.dll", "System.Runtime.dll" }; 
     private List<string> SelectedIds = new();
@@ -93,9 +85,8 @@
         // https://raw.githubusercontent.com/microsoft/monaco-editor/main/src/basic-languages/monaco.contribution.ts
         Language = "csharp";
 
-        // Microsoft.CodeAnalysis.CSharp.LanguageVersion.Default
-        Compiler = "NetLatest";
-        
+        CompilerVersion = LanguageVersion.Default;
+
         DisabledIds = Required;
         SelectedIds = new List<string>(Required);
     }
@@ -103,7 +94,7 @@
     private List<(string reference, string referenceNoExt)> SortedReferencesWithoutExtension()
     {
         return References.Select(r => new  { reference = r, referenceNoExt = r.TrimEnd(".dll") })
-            .Select(c => (Reference: c.reference, ReferenceNoExt: c.referenceNoExt)) 
+            .Select(c => (Reference: c.reference, ReferenceNoExt: c.referenceNoExt))
             .OrderBy(a => a.ReferenceNoExt)
             .ToList();
     }
@@ -122,7 +113,13 @@
     {
         _cts = new CancellationTokenSource();
         string value = await _editor.GetValue();
-        var args = new CompilationArgs() { SourceCode = value, CancellationToken = _cts.Token, References = SelectedIds };
+        var args = new CompilationArgs()
+        {
+            SourceCode = value,
+            CancellationToken = _cts.Token,
+            References = SelectedIds,
+            LanguageVersion = CompilerVersion
+        };
         try
         {
             CanCancel = true;
@@ -152,5 +149,10 @@
     {
         _editor.SetValue(sample.SourceCode);
         SelectedIds = Required.Union(sample.AdditionalNamespaces).ToList();
+    }
+
+    private void CompilerChanged(CompilerVersionArgs compiler)
+    {
+        CompilerVersion = compiler.LanguageVersion;
     }
 }

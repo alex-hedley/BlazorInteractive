@@ -57,7 +57,7 @@
         var sourceCode = string.Format(sourceCodeFormat, args.SourceCode);
 
         await Task.Run(async () => {
-            var compilationResult = await CodeCompiler.CompileAsync(sourceCode, args.References, args.CancellationToken);
+            var compilationResult = await CodeCompiler.CompileAsync(sourceCode, args.References, args.LanguageVersion, args.CancellationToken);
 
             output = compilationResult.Match(
                 assembly => {

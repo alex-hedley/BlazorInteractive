@@ -1,0 +1,24 @@
+@using Microsoft.CodeAnalysis.CSharp;
+
+<label class="form-label" for="Compiler">Compiler:</label>
+<select id="Compiler" name="Compiler" class="form-control" data-val="true" data-val-required="The Compiler field is required." @onchange="ChangeCompilerVersion">
+    @foreach(var languageVersion in LanguageVersions)
+    {
+        <option value="@languageVersion">@languageVersion</option>
+    }
+</select>
+
+@code {
+    [Parameter]
+    public EventCallback<CompilerVersionArgs> OnCompilerChanged { get; set; }
+
+    private readonly List<string> LanguageVersions = Enum.GetNames<LanguageVersion>().ToList();
+
+    private async Task ChangeCompilerVersion(ChangeEventArgs e)
+    {
+        var chosenItem = e.Value?.ToString();
+        Enum.TryParse<LanguageVersion>(chosenItem, out var languageVersion);
+        var compilerArgs = new CompilerVersionArgs(languageVersion);
+        await OnCompilerChanged.InvokeAsync(compilerArgs);
+    }
+}

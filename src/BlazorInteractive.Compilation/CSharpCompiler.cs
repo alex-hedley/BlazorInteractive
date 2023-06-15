@@ -9,7 +9,7 @@ namespace BlazorInteractive.Compilation;
 
 public class CSharpCompiler : ICSharpCompiler
 {
-    public CSharpCompilationResult Compile(string sourceCode, string assemblyName, ReferenceCollection references)
+    public CSharpCompilationResult Compile(string sourceCode, string assemblyName, ReferenceCollection references, LanguageVersion languageVersion)
     {
         if (string.IsNullOrEmpty(sourceCode))
         {
@@ -26,7 +26,7 @@ public class CSharpCompiler : ICSharpCompiler
             .Append(sourceCode)
             .Join(Environment.NewLine);
 
-        var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Default);
+        var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(languageVersion);
         var parsedSyntaxTree = SyntaxFactory.ParseSyntaxTree(sourceCodeWithUsings, parseOptions);
 
         var options = new CSharpCompilationOptions(
@@ -39,6 +39,4 @@ public class CSharpCompiler : ICSharpCompiler
         var compilation = builder.Create(assemblyName, new[] { parsedSyntaxTree }, references, options);
         return new CSharpCompilationWrapper(compilation.Value);
     }
-
-    
 }
