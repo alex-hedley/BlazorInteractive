@@ -1,0 +1,110 @@
+name: Build / Test (with Reports)
+
+# Run workflow on every push to the master branch
+on:
+  workflow_dispatch:
+#   push:
+#     branches: [ main, dev ]
+#     paths: src/**
+#   pull_request:
+#     branches: [ main ]
+#     paths: src/**
+
+# permissions:
+#   contents: read
+#   issues: read
+#   checks: write
+#   pull-requests: write
+#   pages: write
+#   #id-token: write
+
+jobs:
+  build-test:
+    # use ubuntu-latest image to run steps on
+    runs-on: ubuntu-latest
+    
+#     defaults:
+#       run:
+#         working-directory: src
+    
+    steps:
+    # uses GitHub's checkout action to checkout code form the master branch
+    - name: 🛎️ Checkout
+      uses: actions/checkout@v3
+    
+    - name: Setup .NET 7.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '7.0.x'
+        # include-prerelease: true
+    
+    - name: ⬇️ Restore dependencies
+      run: dotnet restore
+      working-directory: src
+      
+    - name: 🔨 Build
+      run: dotnet build --no-restore
+      working-directory: src
+    
+    # Run Tests
+    - name: Unit Testing
+      # run: dotnet test BlazorInteractive.Tests/BlazorInteractive.Tests.csproj --collect:"XPlat Code Coverage"
+      # run: dotnet test BlazorInteractive.Compilation.Tests/BlazorInteractive.Compilation.Tests.csproj --collect:"XPlat Code Coverage"
+      run: dotnet test --collect:"XPlat Code Coverage"
+      working-directory: src
+      
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        xunit_files: 'src/**/TestResults/**/coverage.cobertura.xml'
+    
+    # ReportGenerator -reports:"src/**/TestResults/**/coverage.cobertura.xml" -targetdir:coveragereport
+    - name: ReportGenerator
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.1.9
+      with:
+        reports: 'src/**/TestResults/**/coverage.cobertura.xml' # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
+        targetdir: 'coveragereport' # REQUIRED # The directory where the generated report should be saved.
+        reporttypes: 'HtmlInline;Cobertura' # The output formats and scope (separated by semicolon) Values: Badges, Clover, Cobertura, CsvSummary, Html, Html_Dark, Html_Light, HtmlChart, HtmlInline, HtmlInline_AzurePipelines, HtmlInline_AzurePipelines_Dark, HtmlInline_AzurePipelines_Light, HtmlSummary, JsonSummary, Latex, LatexSummary, lcov, MarkdownSummary, MHtml, PngChart, SonarQube, TeamCitySummary, TextSummary, Xml, XmlSummary
+        # sourcedirs: '' # Optional directories which contain the corresponding source code (separated by semicolon). The source directories are used if coverage report contains classes without path information.
+        # historydir: '' # Optional directory for storing persistent coverage information. Can be used in future reports to show coverage evolution.
+        # plugins: '' # Optional plugin files for custom reports or custom history storage (separated by semicolon).
+        assemblyfilters: '+BlazorInteractive*;-XUnit.*;-Bunit.*;-AltCover.*;-AngleSharpWrappers' # Optional list of assemblies that should be included or excluded in the report. Exclusion filters take precedence over inclusion filters. Wildcards are allowed.
+        classfilters: '+*;-BlazorInteractive.Tests;-BlazorInteractive.Compilation.Tests' # Optional list of classes that should be included or excluded in the report. Exclusion filters take precedence over inclusion filters. Wildcards are allowed.
+        filefilters: '+*' # Optional list of files that should be included or excluded in the report. Exclusion filters take precedence over inclusion filters. Wildcards are allowed.
+        verbosity: 'Info' # The verbosity level of the log messages. Values: Verbose, Info, Warning, Error, Off
+        # title: '' # Optional title.
+        tag: '${{ github.run_number }}_${{ github.run_id }}' # Optional tag or build version.
+        # license: '' # Optional license for PRO version. Get your license here: https://reportgenerator.io/pro
+        # customSettings: '' # Optional custom settings (separated by semicolon). See: https://github.com/danielpalme/ReportGenerator/wiki/Settings.
+        toolpath: 'reportgeneratortool' # Default directory for installing the dotnet tool.
+    
+    - name: Upload coverage report artifact
+      uses: actions/upload-artifact@v2.2.3
+      with:
+        name: CoverageReport # Artifact name        
+        path: coveragereport # Directory containing files to upload
+    
+    # https://github.com/zyborg/dotnet-tests-report
+    # https://github.com/marketplace/actions/dotnet-tests-report
+    - name: Unit Tests - BlazorInteractive
+      uses: zyborg/dotnet-tests-report@v1
+      with:
+        project_path: src/BlazorInteractive.Tests
+        report_name: BlazorInteractive Tests
+        report_title: BlazorInteractive Tests
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        gist_name: blazor_interactive_tests.md
+        gist_badge_label: 'Blazor Interactive: %Counters_passed%/%Counters_total%'
+        gist_token: ${{ secrets.GIST_TOKEN }}
+
+    - name: Unit Tests - BlazorInteractive Compilation
+      uses: zyborg/dotnet-tests-report@v1
+      with:
+        project_path: src/BlazorInteractive.Compilation.Tests
+        report_name: BlazorInteractive Compilation Tests
+        report_title: BlazorInteractive Compilation Tests
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        gist_name: blazor_interactive_compilation_tests.md
+        gist_badge_label: 'Blazor Interactive Compilation: %Counters_passed%/%Counters_total%'
+        gist_token: ${{ secrets.GIST_TOKEN }}
