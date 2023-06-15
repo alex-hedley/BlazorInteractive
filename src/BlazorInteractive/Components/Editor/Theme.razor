@@ -1,0 +1,18 @@
+<label class="form-label" for="theme">Theme:</label>
+<select id="theme" @onchange="ChangeTheme" class="form-control">
+    <option value="vs">Visual Studio</option>
+    <option value="vs-dark">Visual Studio Dark</option>
+    <option value="hc-black">High Contrast Black</option>
+</select>
+
+@code {
+    [Parameter]
+    public EventCallback<string> OnThemeChanged { get; set; }
+
+    private async Task ChangeTheme(ChangeEventArgs e)
+    {
+        var chosenItem = e.Value?.ToString();
+        await OnThemeChanged.InvokeAsync(chosenItem);
+    }
+    
+}

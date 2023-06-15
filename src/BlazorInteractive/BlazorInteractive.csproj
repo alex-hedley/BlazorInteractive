@@ -5,32 +5,35 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+        <PublishTrimmed>false</PublishTrimmed>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' ">
       <ExternalConsole>true</ExternalConsole>
     </PropertyGroup>
+
     <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' ">
       <ExternalConsole>true</ExternalConsole>
     </PropertyGroup>
+
     <ItemGroup>
-        <PackageReference Include="Blazored.Toast" Version="4.1.0" />
-        <PackageReference Include="BlazorMonaco" Version="3.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.5" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.5" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
-        <PackageReference Include="OneOf" Version="3.0.243" />
+      <PackageReference Include="Blazored.Toast" Version="4.1.0" />
+      <PackageReference Include="BlazorMonaco" Version="3.0.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.5" />
+      <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.5" PrivateAssets="all" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
+      <PackageReference Include="OneOf" Version="3.0.243" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\BlazorInteractive.Compilation\BlazorInteractive.Compilation.csproj" />
+      <ProjectReference Include="..\BlazorInteractive.Compilation\BlazorInteractive.Compilation.csproj" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
       <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-       <_Parameter1>$(AssemblyName).Tests</_Parameter1>
+        <_Parameter1>$(AssemblyName).Tests</_Parameter1>
       </AssemblyAttribute>
-    </ItemGroup>  
+    </ItemGroup>
 
 </Project>

@@ -3,9 +3,10 @@
 <div class="samples-dropdown">
     <label class="form-label" for="Samples">Samples:</label>
     <select id="Samples" name="Samples" class="form-control" @onchange="ChangeSample">
-        <option value="----">Please Select</option>
-        <option value="simple">Simple</option>
-        <option value="fib">Fib</option>
+        @foreach(var sample in _samples)
+        {
+            <option value="@sample.Name">@sample.Name</option>
+        }
     </select>
 </div>
 
@@ -13,7 +14,7 @@
     [Parameter]
     public EventCallback<SampleArgs> OnSampleChanged { get; set; }
 
-    private SampleArgs[]? _samples;
+    private SampleArgs[] _samples = Array.Empty<SampleArgs>();
 
     protected async override Task OnInitializedAsync()
     {
@@ -26,5 +27,4 @@
         var chosenSample = _samples.FirstOrDefault(s => s.Name == chosenItem);
         await OnSampleChanged.InvokeAsync(chosenSample);
     }
-    
 }
