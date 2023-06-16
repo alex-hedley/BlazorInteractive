@@ -2,5 +2,5 @@ namespace BlazorInteractive.Compilation;
 
 public interface IAssemblyLoader
 {
-     Results.AssemblyLoaderResult Load(ICSharpCompilation compilation);
+     Results.AssemblyLoaderResult Load(ICompilation compilation);
 }

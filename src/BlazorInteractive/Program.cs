@@ -16,6 +16,7 @@ builder.Services.AddScoped<IReferenceResolver, RemoteFileReferenceResolver>();
 builder.Services.AddScoped<IAssemblyInvoker, AssemblyInvoker>();
 builder.Services.AddScoped<IAssemblyLoader, AssemblyLoader>();
 builder.Services.AddScoped<ICSharpCompiler, CSharpCompiler>();
+builder.Services.AddScoped<IVisualBasicCompiler, VisualBasicCompiler>();
 builder.Services.AddBlazoredToast();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });

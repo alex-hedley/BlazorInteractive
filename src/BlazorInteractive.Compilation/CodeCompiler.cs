@@ -7,12 +7,14 @@ public class CodeCompiler : ICompiler
 {
     private readonly IReferenceResolver _referenceResolver;
     private readonly ICSharpCompiler _cSharpCompiler;
+    private readonly IVisualBasicCompiler _visualBasicCompiler;
     private readonly IAssemblyLoader _assemblyLoader;
 
-    public CodeCompiler(IReferenceResolver referenceResolver, ICSharpCompiler cSharpCompiler, IAssemblyLoader assemblyLoader)
+    public CodeCompiler(IReferenceResolver referenceResolver, ICSharpCompiler cSharpCompiler, IVisualBasicCompiler visualBasicCompiler, IAssemblyLoader assemblyLoader)
     {
         _referenceResolver = referenceResolver;
         _cSharpCompiler =  cSharpCompiler;
+        _visualBasicCompiler = visualBasicCompiler;
         _assemblyLoader = assemblyLoader;
     }
 
@@ -41,7 +43,10 @@ public class CodeCompiler : ICompiler
                 {
                     var assemblyName = Path.GetRandomFileName();
 
-                    var compiler = _cSharpCompiler.Compile(sourceCode, assemblyName, refs, languageVersion);
+                    // var compiler = _cSharpCompiler.Compile(sourceCode, assemblyName, refs, languageVersion);
+                    var languageVersion = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.Default;
+                    var compiler = _visualBasicCompiler.Compile(sourceCode, assemblyName, refs, languageVersion);
+
                     return compiler.Match(
                         compilation =>
                         {

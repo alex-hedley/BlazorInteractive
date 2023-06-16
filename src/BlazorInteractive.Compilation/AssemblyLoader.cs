@@ -14,7 +14,7 @@ public class AssemblyLoader : IAssemblyLoader
         _logger = logger;
     }
 
-    public AssemblyLoaderResult Load(ICSharpCompilation compilation)
+    public AssemblyLoaderResult Load(ICompilation compilation)
     {
         using var ms = new MemoryStream();
         var result = compilation.Value?.Emit(ms);

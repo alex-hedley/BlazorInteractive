@@ -12,6 +12,7 @@ public class CodeCompilerTest
     private readonly Mock<IAssemblyAccessor<Assembly>> _assemblyAccessor;
     private readonly Mock<IReferenceResolver> _referenceResolver;
     private readonly Mock<ICSharpCompiler> _cSharpCompiler;
+    private readonly Mock<IVisualBasicCompiler> _visualBasicCompiler;
     private readonly Mock<IAssemblyLoader> _assemblyLoader;
     private readonly CancellationToken _defaultCancellationToken;
     private readonly CodeCompiler _compiler;
@@ -33,13 +34,14 @@ public class CodeCompilerTest
         _assemblyAccessor.Setup(a => a.GetAsync(_defaultImports, _defaultCancellationToken)).ReturnsAsync(_appDomainAssemblies.ToList().AsReadOnly());
         _defaultCancellationToken = CancellationToken.None;
         _cSharpCompiler = new Mock<ICSharpCompiler>();
+        _visualBasicCompiler = new Mock<IVisualBasicCompiler>();
         _assemblyLoader = new Mock<IAssemblyLoader>();
         _languageVersion = LanguageVersion.Default;
 
         _sourceCode = "Console.WriteLine(\"Hello, World!\");";
 
         _referenceResolver = new Mock<IReferenceResolver>();
-        _compiler = new CodeCompiler(_referenceResolver.Object, _cSharpCompiler.Object, _assemblyLoader.Object);
+        _compiler = new CodeCompiler(_referenceResolver.Object, _cSharpCompiler.Object, _visualBasicCompiler.Object, _assemblyLoader.Object);
     }
 
     [Fact]
