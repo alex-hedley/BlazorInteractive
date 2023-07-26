@@ -1,4 +1,5 @@
 using Bunit;
+using Xunit;
 using FluentAssertions;
 
 using BlazorInteractive.Components.Editor;
@@ -10,17 +11,17 @@ public class SampleTests : TestContext
     public SampleTests() {}
 
     // [Fact]
-    public void Test1()
-    {
-        var cut = RenderComponent<Sample>(parameters => parameters
-            .Add(p => p.OnSampleChanged, null)
-        );
-        
-        // cut.FindAll("button")[1].Click();
-        
-        var sample = cut.Instance;
-        Assert.Equal(sample.OnSampleChanged, null);
-    }
+    // public void Test1()
+    // {
+    //     var cut = RenderComponent<Sample>(parameters => parameters
+    //         .Add(p => p.OnSampleChanged, null)
+    //     );
+    //     
+    //     // cut.FindAll("button")[1].Click();
+    //     
+    //     var sample = cut.Instance;
+    //     Assert.Equal(sample.OnSampleChanged, null);
+    // }
 
     // [Fact]
     public void CheckMarkup()
