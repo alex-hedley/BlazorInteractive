@@ -1,0 +1,57 @@
+@inject HttpClient Http
+
+<div class="samples-dropdown">
+    <label class="form-label" for="Samples">Samples:</label>
+    <select id="Samples" name="Samples" class="form-control" @onchange="ChangeSample">
+        @foreach(var sample in _samples)
+        {
+            <option value="@sample.Name">@sample.Name</option>
+        }
+    </select>
+</div>
+
+@code {
+    private string _language;
+    
+    [Parameter]
+    public string Language { get; set; }
+    
+    [Parameter]
+    public EventCallback<SampleArgs> OnSampleChanged { get; set; }
+
+    private Sample[] _samples = Array.Empty<Sample>();
+    private SampleArgs _sampleArgs;
+    private string _sample;
+
+    protected async override Task OnInitializedAsync()
+    {
+        _samples = await Http.GetFromJsonAsync<Sample[]>("data/samples.json");
+        _sample = _samples.FirstOrDefault().Name;
+    }
+    
+    protected async override void OnParametersSet()
+    {
+        if (_language != Language)
+        {
+            _language = Language;
+            await SetSampleArgs();
+        }
+    }
+
+    private async Task ChangeSample(ChangeEventArgs e)
+    {
+        _sample = e.Value?.ToString();
+        await SetSampleArgs();
+        await OnSampleChanged.InvokeAsync(_sampleArgs);
+    }
+
+    private async Task SetSampleArgs()
+    {
+        if (_sample is null) return;
+        
+        var chosenSample = _samples.FirstOrDefault(s => s.Name == _sample);
+        var sourceCode = chosenSample?.SourceCodes.FirstOrDefault(sc => sc.Language == _language);
+        _sampleArgs = new SampleArgs() { Name = chosenSample?.Name, AdditionalNamespaces = chosenSample?.AdditionalNamespaces, SourceCode = sourceCode?.Code };
+        await OnSampleChanged.InvokeAsync(_sampleArgs);
+    }
+}

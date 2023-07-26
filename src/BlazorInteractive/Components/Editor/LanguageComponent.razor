@@ -1,0 +1,31 @@
+<label class="form-label" for="Language">Language:</label>
+<select id="Language" 
+        name="Language"  
+        class="form-control" 
+        data-val="true" 
+        data-val-required="The Language field is required." 
+        @onchange="ChangeLanguage"
+        >
+    @foreach(var language in Languages)
+    {
+        <option value="@language.Key">@language.Value</option>
+    }
+</select>
+
+@code {
+    [Parameter]
+    public EventCallback<string> OnLanguageChanged { get; set; }
+
+    private readonly List<KeyValuePair<string, string>> Languages = new()
+    {
+        new KeyValuePair<string, string>("csharp", "C#"),
+        new KeyValuePair<string, string>("vb", "VB.NET"),
+        new KeyValuePair<string, string>("fsharp", "F#")
+    };
+    
+    private async Task ChangeLanguage(ChangeEventArgs e)
+    {
+        var chosenItemValue = e.Value?.ToString();
+        await OnLanguageChanged.InvokeAsync(chosenItemValue);
+    }
+}

@@ -1,5 +1,4 @@
 using BlazorInteractive.Compilation.Results;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace BlazorInteractive.Compilation;
 
@@ -18,7 +17,7 @@ public class CodeCompiler : ICompiler
         _assemblyLoader = assemblyLoader;
     }
 
-    public async Task<CompilationResult> CompileAsync(string sourceCode, ICollection<string>? imports, LanguageVersion languageVersion, CancellationToken cancellationToken = default)
+    public async Task<CompilationResult> CompileAsync(string sourceCode, ICollection<string>? imports, long languageVersion, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(sourceCode))
         {

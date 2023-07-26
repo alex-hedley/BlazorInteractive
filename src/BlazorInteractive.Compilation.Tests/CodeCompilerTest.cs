@@ -17,7 +17,7 @@ public class CodeCompilerTest
     private readonly CancellationToken _defaultCancellationToken;
     private readonly CodeCompiler _compiler;
     private readonly List<string> _defaultImports;
-    private readonly LanguageVersion _languageVersion;
+    private readonly long _languageVersion;
 
     private readonly string _sourceCode = string.Empty;
     private static readonly Assembly[] _appDomainAssemblies;
@@ -36,7 +36,7 @@ public class CodeCompilerTest
         _cSharpCompiler = new Mock<ICSharpCompiler>();
         _visualBasicCompiler = new Mock<IVisualBasicCompiler>();
         _assemblyLoader = new Mock<IAssemblyLoader>();
-        _languageVersion = LanguageVersion.Default;
+        _languageVersion = (long) LanguageVersion.Default;
 
         _sourceCode = "Console.WriteLine(\"Hello, World!\");";
 
@@ -54,7 +54,7 @@ public class CodeCompilerTest
         var csc = new Mock<ICSharpCompilation>();
         var wrapper = new CSharpCompilationWrapper();
         //_cSharpCompiler.Setup(c => c.Compile(_sourceCode, SystemAssembly, roc)).Returns(wrapper);
-        _cSharpCompiler.Setup(c => c.Compile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ReferenceCollection>(), It.IsAny<LanguageVersion>())).Returns(wrapper);
+        _cSharpCompiler.Setup(c => c.Compile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ReferenceCollection>(), It.IsAny<long>())).Returns(wrapper);
 
         var dummyAssembly = typeof(CodeCompilerTest).Assembly;
         _assemblyLoader.Setup(a => a.Load(It.IsAny<ICSharpCompilation>())).Returns(dummyAssembly);

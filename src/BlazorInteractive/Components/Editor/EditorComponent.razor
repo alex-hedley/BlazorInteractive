@@ -1,4 +1,5 @@
 @using Microsoft.CodeAnalysis.CSharp;
+@using Microsoft.CodeAnalysis.VisualBasic;
 
 <div class="row">
     <div class="col">
@@ -7,21 +8,16 @@
 </div>
 <div class="row">
     <div class="col">
-        <label class="form-label" for="Language">Language:</label>
-        <select id="Language" name="Language"  class="form-control" data-val="true" data-val-required="The Language field is required." @bind="Language" disabled>
-            <option value="csharp">C#</option>
-            <option value="vb">VB.NET</option>
-            <option value="fsharp">F#</option>
-        </select>
+        <LanguageComponent OnLanguageChanged="@LanguageChanged" />
     </div>
     <div class="col">
-        <CompilerVersion OnCompilerChanged="@CompilerChanged" />
+        <CompilerVersion Language="@Language" OnCompilerChanged="@CompilerChanged" />
     </div>
     <div class="col">
         <Theme OnThemeChanged="@ThemeChanged" />
     </div>
     <div class="col">
-        <Sample OnSampleChanged="@SampleChanged" />
+        <SampleComponent Language="@Language" OnSampleChanged="@SampleChanged" />
     </div>
 </div>
 <br />
@@ -60,10 +56,10 @@
     public List<string> References { get; set; } = new();
 
     [Parameter]
-    public string? Language { get; set; }
+    public string? Language { get; set; } = "csharp";
 
     [Parameter]
-    public LanguageVersion CompilerVersion { get; set; }
+    public long CompilerVersion { get; set; }
 
     private readonly List<string> Required = new() { "System.dll", "System.Console.dll", "System.Private.CoreLib.dll", "System.Runtime.dll" }; 
     private List<string> SelectedIds = new();
@@ -78,10 +74,23 @@
         // https://raw.githubusercontent.com/dotnet/roslyn/main/src/Compilers/Core/Portable/Compilation/ParseOptions.cs
         // https://raw.githubusercontent.com/dotnet/roslyn/main/src/Compilers/Core/Portable/Symbols/LanguageNames.cs
         // https://raw.githubusercontent.com/microsoft/monaco-editor/main/src/basic-languages/monaco.contribution.ts
-        Language = "csharp";
-
-        CompilerVersion = LanguageVersion.Default;
-
+        // Language = "csharp";
+        switch (Language)
+        {
+            case "csharp":
+                CompilerVersion = (long) Microsoft.CodeAnalysis.CSharp.LanguageVersion.Default;
+                break;
+            case "vb":
+                CompilerVersion = (long) Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.Default;
+                break;
+            case "fsharp":
+                CompilerVersion = 0;
+                break;
+            default:
+                CompilerVersion = (long) Microsoft.CodeAnalysis.CSharp.LanguageVersion.Default;
+                break;
+        }
+        
         DisabledIds = Required;
         SelectedIds = new List<string>(Required);
     }
@@ -99,7 +108,7 @@
         return new StandaloneEditorConstructionOptions
         {
             AutomaticLayout = true,
-            Language = "csharp",
+            Language = Language,
             Value = "Console.WriteLine(\"Hello, World!\");"
         };
     }
@@ -151,5 +160,10 @@
     private void CompilerChanged(CompilerVersionArgs compiler)
     {
         CompilerVersion = compiler.LanguageVersion;
+    }
+
+    private void LanguageChanged(string language)
+    {
+        Language = language;
     }
 }

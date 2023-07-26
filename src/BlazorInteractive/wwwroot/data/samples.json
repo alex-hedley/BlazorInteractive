@@ -2,13 +2,39 @@
     {
         "Name": "simple",
         "additionalNamespaces": [],
-        "sourceCode": "Console.WriteLine(\"Hello, World!\");"
+        "sourceCodes": [
+            {
+                "language": "csharp",
+                "code": "Console.WriteLine(\"Hello, World!\");"
+            },
+            {
+                "language": "vb",
+                "code": "Console.WriteLine(\"Hello, World!\");"
+            },
+            {
+                "language": "fsharp",
+                "code": "printfn \"Hello, World!\""
+            }
+        ]
     },
     {
         "Name": "fib",
         "additionalNamespaces": [
             "System.Linq.dll"
         ],
-        "sourceCode": "IEnumerable<int> Fib()\n{\n\tvar a = 0;\n\tvar b = 1;\n\n\tyield return a;\n\n\twhile (true)\n\t{\n\t\tyield return b;\n\t\tvar c = a + b;\n\t\ta = b;\n\t\tb = c;\n\t}\n}\n\nforeach (var num in Fib().Take(10)){\n\tConsole.WriteLine(num);\n}"
+        "sourceCodes": [
+            {
+                "language": "csharp",
+                "code": "IEnumerable<int> Fib()\n{\n\tvar a = 0;\n\tvar b = 1;\n\n\tyield return a;\n\n\twhile (true)\n\t{\n\t\tyield return b;\n\t\tvar c = a + b;\n\t\ta = b;\n\t\tb = c;\n\t}\n}\n\nforeach (var num in Fib().Take(10)){\n\tConsole.WriteLine(num);\n}"
+            },
+            {
+                "language": "vb",
+                "code": "TO DO"
+            },
+            {
+                "language": "fsharp",
+                "code": "let fib =\n\tlet mutable a = 0L\n\tlet mutable b = 1L\n\n\n\tseq {\n\t\tyield a\n\t\twhile (true) do\n\t\t\tyield b\n\t\t\tlet next = a + b\n\t\t\ta <- b\n\t\t\tb <- next\n\t}\n\nfor value in Seq.take 10 fib do\n\tprintfn \"%i\" value"
+            }
+        ]
     }
 ]

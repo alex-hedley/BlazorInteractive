@@ -13,7 +13,7 @@ public class SampleTests : TestContext
     // [Fact]
     // public void Test1()
     // {
-    //     var cut = RenderComponent<Sample>(parameters => parameters
+    //     var cut = RenderComponent<SampleComponent>(parameters => parameters
     //         .Add(p => p.OnSampleChanged, null)
     //     );
     //     
@@ -26,7 +26,7 @@ public class SampleTests : TestContext
     // [Fact]
     public void CheckMarkup()
     {
-        var cut = RenderComponent<Sample>(parameters => parameters
+        var cut = RenderComponent<SampleComponent>(parameters => parameters
             .Add(p => p.OnSampleChanged, null)
         );
 

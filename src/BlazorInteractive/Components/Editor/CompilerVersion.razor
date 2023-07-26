@@ -1,4 +1,5 @@
 @using Microsoft.CodeAnalysis.CSharp;
+@using Microsoft.CodeAnalysis.VisualBasic;
 
 <label class="form-label" for="Compiler">Compiler:</label>
 <select id="Compiler" name="Compiler" class="form-control" data-val="true" data-val-required="The Compiler field is required." @onchange="ChangeCompilerVersion">
@@ -9,16 +10,54 @@
 </select>
 
 @code {
+    private string _language;
+    
+    [Parameter]
+    public string Language { get; set; }
+    
     [Parameter]
     public EventCallback<CompilerVersionArgs> OnCompilerChanged { get; set; }
 
-    private readonly List<string> LanguageVersions = Enum.GetNames<LanguageVersion>().ToList();
-
+    private List<string> LanguageVersions = new(); // Enum.GetNames<LanguageVersion>().ToList();
+    
+    // protected override async Task OnInitializedAsync()
+    // {
+    // }
+    
+    protected override void OnParametersSet()
+    {
+        if (_language != Language)
+        {
+            _language = Language;
+            // Console.WriteLine("a parameter has changed");
+            SetCompilerVersions();
+        }
+    }
+    
     private async Task ChangeCompilerVersion(ChangeEventArgs e)
     {
         var chosenItem = e.Value?.ToString();
-        Enum.TryParse<LanguageVersion>(chosenItem, out var languageVersion);
+        // Enum.TryParse<LanguageVersion>(chosenItem, out var languageVersion);
+        long.TryParse(chosenItem, out var languageVersion);
         var compilerArgs = new CompilerVersionArgs(languageVersion);
         await OnCompilerChanged.InvokeAsync(compilerArgs);
+    }
+
+    private void SetCompilerVersions()
+    {
+        switch (Language)
+        {
+            case "csharp":
+                LanguageVersions = Enum.GetNames<Microsoft.CodeAnalysis.CSharp.LanguageVersion>().ToList();
+                break;
+            case "vb":
+                LanguageVersions = Enum.GetNames<Microsoft.CodeAnalysis.VisualBasic.LanguageVersion>().ToList();
+                break;
+            case "fsharp":
+                // LanguageVersions;
+                break;
+            default:
+                break;
+        }
     }
 }
