@@ -38,4 +38,16 @@ public class AssemblyLoader : IAssemblyLoader
             return assembly;
         }
     }
+
+
+    public AssemblyLoaderResult Load(ICSharpCompilation cSharpCompilation)
+    {
+        return Load(new CompilationWrapper(cSharpCompilation.Value));
+    }
+
+    public AssemblyLoaderResult Load(IVisualBasicCompilation visualBasicCompilation)
+    {
+        return Load(new CompilationWrapper(visualBasicCompilation.Value));
+    }
+    
 }

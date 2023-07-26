@@ -6,10 +6,10 @@ public class CompilationWrapper : ICompilation
 {
     public CompilationWrapper() { }
     
-    public CompilationWrapper(Compilation? value)
+    public CompilationWrapper(Microsoft.CodeAnalysis.Compilation? value)
     {
         Value = value;
     }
     
-    public Compilation? Value { get; set; }
+    public Microsoft.CodeAnalysis.Compilation? Value { get; set; }
 }

@@ -43,9 +43,9 @@ public class CodeCompiler : ICompiler
                 {
                     var assemblyName = Path.GetRandomFileName();
 
-                    // var compiler = _cSharpCompiler.Compile(sourceCode, assemblyName, refs, languageVersion);
-                    var languageVersion = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.Default;
-                    var compiler = _visualBasicCompiler.Compile(sourceCode, assemblyName, refs, languageVersion);
+                    var compiler = _cSharpCompiler.Compile(sourceCode, assemblyName, refs, languageVersion);
+                    // var languageVersion = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.Default;
+                    // var compiler = _visualBasicCompiler.Compile(sourceCode, assemblyName, refs, languageVersion);
 
                     return compiler.Match(
                         compilation =>
