@@ -1,4 +1,5 @@
 using BlazorInteractive.Compilation.Results;
+using Void = BlazorInteractive.Compilation.Results.Void;
 
 namespace BlazorInteractive.Compilation;
 
@@ -17,7 +18,7 @@ public class CodeCompiler : ICompiler
         _assemblyLoader = assemblyLoader;
     }
 
-    public async Task<CompilationResult> CompileAsync(string sourceCode, ICollection<string>? imports, long languageVersion, CancellationToken cancellationToken = default)
+    public async Task<CompilationResult> CompileAsync(string sourceCode, ICollection<string>? imports, string language, long languageVersion, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(sourceCode))
         {
@@ -42,20 +43,45 @@ public class CodeCompiler : ICompiler
                 {
                     var assemblyName = Path.GetRandomFileName();
 
-                    var compiler = _cSharpCompiler.Compile(sourceCode, assemblyName, refs, languageVersion);
-                    // var languageVersion = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion.Default;
-                    // var compiler = _visualBasicCompiler.Compile(sourceCode, assemblyName, refs, languageVersion);
+                    if (language == "csharp")
+                    {
+                        var compiler = _cSharpCompiler.Compile(sourceCode, assemblyName, refs, languageVersion);
+                        
+                        return compiler.Match(
+                            compilation =>
+                            {
+                                return _assemblyLoader.Load(compilation).Match<CompilationResult>(
+                                    assembly => assembly,
+                                    failure => failure
+                                );
+                            },
+                            failure => failure
+                        );
+                    }
 
-                    return compiler.Match(
-                        compilation =>
-                        {
-                            return _assemblyLoader.Load(compilation).Match<CompilationResult>(
-                                assembly => assembly,
-                                failure => failure
-                            );
-                        },
-                        failure => failure
-                    );
+                    if (language == "vb")
+                    {
+                        var compiler = _visualBasicCompiler.Compile(sourceCode, assemblyName, refs, languageVersion);
+                        
+                        return compiler.Match(
+                            compilation =>
+                            {
+                                return _assemblyLoader.Load(compilation).Match<CompilationResult>(
+                                    assembly => assembly,
+                                    failure => failure
+                                );
+                            },
+                            failure => failure
+                        );
+                    }
+
+                    if (language == "fsharp")
+                    {
+                        // TODO
+                        Console.WriteLine("TODO: F#");
+                    }
+
+                    return new Void();
                 },
                 failure => failure,
                 cancelled => cancelled

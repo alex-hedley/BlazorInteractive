@@ -18,6 +18,13 @@ public class ReferenceCollection : ReadOnlyCollection<IReference>
             .GetDistinctNamespaces()
             .Select(u => $"using {u};");
     }
+    
+    public IEnumerable<string> ToImports()
+    {
+        return this
+            .GetDistinctNamespaces()
+            .Select(i => $"Imports {i};");
+    }
 
     private IEnumerable<string> GetDistinctNamespaces()
     {

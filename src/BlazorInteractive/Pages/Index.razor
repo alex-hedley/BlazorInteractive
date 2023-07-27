@@ -11,7 +11,7 @@
 <PageTitle>Index</PageTitle>
 
 <div class="container">
-    <EditorComponent OnCompileChanged="OnCompileAsync" References="References"></EditorComponent>
+    <EditorComponent OnCompileChanged="OnCompileAsync" References="References" @ref="_editor"></EditorComponent>
     <br />
     <div class="row">
         <div class="col col-9">
@@ -24,6 +24,7 @@
 </div>
 
 @code {
+    private EditorComponent _editor = null!;
     private string? output = string.Empty;
     private string? outputClass = string.Empty;
     private List<string> References = new List<string>();
@@ -47,24 +48,44 @@
     private async Task OnCompileAsync(CompilationArgs args)
     {
         output = string.Empty;
-
-        const string sourceCodeFormat = @"
-        namespace BlazorInteractive
-        {{
-            public class Program
-            {{
-                public static void Main()
-                {{
-                    {0}
-                }}
-            }}
-        }}
-        ";
-
+        string sourceCodeFormat = @"";
+        
+        switch (_editor.Language)
+        {
+            case "csharp":
+                sourceCodeFormat = @"
+                    namespace BlazorInteractive
+                    {{
+                        public class Program
+                        {{
+                            public static void Main()
+                            {{
+                                {0}
+                            }}
+                        }}
+                    }}
+                    ";
+                break;
+            case "vb":
+                sourceCodeFormat = @"
+                    Public Module BlazorInteractive
+                        Public Sub Main()
+                            {0}
+                        End Sub
+                    End Module
+                    ";
+                break;
+            case "fsharp":
+                sourceCodeFormat = @"";
+                break;
+            // default:
+            //     break;
+        }
+        
         var sourceCode = string.Format(sourceCodeFormat, args.SourceCode);
 
         await Task.Run(async () => {
-            var compilationResult = await CodeCompiler.CompileAsync(sourceCode, args.References, args.LanguageVersion, args.CancellationToken);
+            var compilationResult = await CodeCompiler.CompileAsync(sourceCode, args.References, _editor.Language!, args.LanguageVersion, args.CancellationToken);
 
             output = compilationResult.Match(
                 assembly => {

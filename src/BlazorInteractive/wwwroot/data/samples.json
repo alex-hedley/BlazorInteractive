@@ -9,7 +9,7 @@
             },
             {
                 "language": "vb",
-                "code": "Console.WriteLine(\"Hello, World!\");"
+                "code": "Console.WriteLine(\"Hello, World!\")"
             },
             {
                 "language": "fsharp",

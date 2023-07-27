@@ -8,7 +8,7 @@ namespace BlazorInteractive.Compilation;
 
 public class VisualBasicCompiler : IVisualBasicCompiler
 {
-    public VisualBasicCompilationResult Compile(string sourceCode, string assemblyName, ReferenceCollection references, LanguageVersion languageVersion)
+    public VisualBasicCompilationResult Compile(string sourceCode, string assemblyName, ReferenceCollection references, long languageVersion)
     {
         if (string.IsNullOrEmpty(sourceCode))
         {
@@ -20,14 +20,23 @@ public class VisualBasicCompiler : IVisualBasicCompiler
             return new Failure($"{nameof(assemblyName)} cannot be null or empty");
         }
 
-        var sourceCodeWithUsings = references
-            .ToUsings()
+        var sourceCodeWithImports = references
+            .ToImports()
             .Append(sourceCode)
             .Join(Environment.NewLine);
 
-        var parseOptions = VisualBasicParseOptions.Default.WithLanguageVersion(languageVersion);
-        var parsedSyntaxTree = SyntaxFactory.ParseSyntaxTree(sourceCodeWithUsings, parseOptions);
+        var languageVersionEnum = (LanguageVersion)Enum.ToObject(typeof(LanguageVersion), languageVersion);
+        var parseOptions = VisualBasicParseOptions.Default.WithLanguageVersion(languageVersionEnum);
+        var parsedSyntaxTree = SyntaxFactory.ParseSyntaxTree(sourceCodeWithImports, parseOptions);
 
+        // BC35000: Requested operation is not available because the runtime library function '<function>' is not defined.
+        // https://learn.microsoft.com/en-us/dotnet/visual-basic/language-reference/error-messages/bc35000
+        // error BC35000: Requested operation is not available because the runtime library function 'Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute..ctor' is not defined.
+        
+        // *.vbproj 
+        // <PropertyGroup>
+        // <VBRuntime>Default</VBRuntime>
+        
         var options = new VisualBasicCompilationOptions(
             OutputKind.DynamicallyLinkedLibrary,
             concurrentBuild: false,
