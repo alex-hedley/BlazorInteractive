@@ -74,6 +74,10 @@
                         End Sub
                     End Module
                     ";
+                
+                // TODO: Add language specific imports...
+                args.References.Add("Microsoft.VisualBasic");
+                
                 break;
             case "fsharp":
                 sourceCodeFormat = @"";

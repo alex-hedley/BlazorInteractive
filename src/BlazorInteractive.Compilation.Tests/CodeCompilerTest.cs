@@ -18,6 +18,7 @@ public class CodeCompilerTest
     private readonly CodeCompiler _compiler;
     private readonly List<string> _defaultImports;
     private readonly long _languageVersion;
+    private readonly string _language;
 
     private readonly string _sourceCode = string.Empty;
     private static readonly Assembly[] _appDomainAssemblies;
@@ -37,6 +38,7 @@ public class CodeCompilerTest
         _visualBasicCompiler = new Mock<IVisualBasicCompiler>();
         _assemblyLoader = new Mock<IAssemblyLoader>();
         _languageVersion = (long) LanguageVersion.Default;
+        _language = "csharp";
 
         _sourceCode = "Console.WriteLine(\"Hello, World!\");";
 
@@ -60,14 +62,16 @@ public class CodeCompilerTest
         _assemblyLoader.Setup(a => a.Load(It.IsAny<ICSharpCompilation>())).Returns(dummyAssembly);
 
         var sourceCode = "1 + 1";
-        var result = await _compiler.CompileAsync(sourceCode, _defaultImports, _languageVersion);
+        var language = "csharp";
+        var result = await _compiler.CompileAsync(sourceCode, _defaultImports, language, _languageVersion);
         result.Value.Should().BeAssignableTo<Assembly>();
     }
 
     [Fact]
     public async Task CompileAsync_WithCodeWithNoResult_ReturnsVoid()
     {
-        var result = await _compiler.CompileAsync(_sourceCode, _defaultImports, _languageVersion);
+        var language = string.Empty;
+        var result = await _compiler.CompileAsync(_sourceCode, _defaultImports, language, _languageVersion);
         result.Value.Should().BeOfType<Failure>();
     }
 
@@ -75,8 +79,9 @@ public class CodeCompilerTest
     public async Task CompileAsync_WithoutSourceCode_ReturnFailure()
     {
         var sourceCode = string.Empty;
-
-        var result = await _compiler.CompileAsync(sourceCode, _defaultImports, _languageVersion);
+        var language = string.Empty;
+        
+        var result = await _compiler.CompileAsync(sourceCode, _defaultImports, language, _languageVersion);
         result.Value.Should().BeOfType<Failure>();
     }
 
@@ -85,7 +90,7 @@ public class CodeCompilerTest
     {
         var imports = new List<string>();
 
-        var result = await _compiler.CompileAsync(_sourceCode, imports, _languageVersion);
+        var result = await _compiler.CompileAsync(_sourceCode, imports, _language, _languageVersion);
         result.Value.Should().BeOfType<Failure>();
     }
 
@@ -96,7 +101,7 @@ public class CodeCompilerTest
         var cancellationToken = cancellationTokenSource.Token;
 
         cancellationTokenSource.Cancel();
-        var result = await _compiler.CompileAsync(_sourceCode, _defaultImports, _languageVersion, cancellationToken);
+        var result = await _compiler.CompileAsync(_sourceCode, _defaultImports, _language, _languageVersion, cancellationToken);
         result.Value.Should().BeOfType<Cancelled>();
     }
 
@@ -104,7 +109,7 @@ public class CodeCompilerTest
     public async Task CompileAsync_WithBadCode_ThrowsCompilationErrorException()
     {
         var sourceCode = "lolCat";
-        var result = await _compiler.CompileAsync(sourceCode, _defaultImports, _languageVersion);
+        var result = await _compiler.CompileAsync(sourceCode, _defaultImports, _language, _languageVersion);
 
         result.Value.As<Failure>();
     }
