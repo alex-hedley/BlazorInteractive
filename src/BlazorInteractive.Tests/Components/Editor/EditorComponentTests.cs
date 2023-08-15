@@ -17,21 +17,21 @@ public class EditorComponentTests : UnitTestBase
     }
 
     //[Fact]
-    public void GetContentFromEditor()
-    {
-        JSInterop.Setup<string>(_monacoGetValueFunction, _ => true);
-
-        var cut = RenderComponent<EditorComponent>();
-        var element = cut.Find(_editorDivId);
-
-        var button = cut.Find("button");
-
-        button.Click();
-
-        JSInterop.VerifyInvoke(_monacoGetValueFunction, calledTimes: 1);
-
-        element.Should().NotBeNull();
-    }
+    // public void GetContentFromEditor()
+    // {
+    //     JSInterop.Setup<string>(_monacoGetValueFunction, _ => true);
+    //
+    //     var cut = RenderComponent<EditorComponent>();
+    //     var element = cut.Find(_editorDivId);
+    //
+    //     var button = cut.Find("button");
+    //
+    //     button.Click();
+    //
+    //     JSInterop.VerifyInvoke(_monacoGetValueFunction, calledTimes: 1);
+    //
+    //     element.Should().NotBeNull();
+    // }
 
     // TODO: Investigate how to stub or fully render the StandaloneCodeEditor, so we may change the themes.
     // [Fact]
