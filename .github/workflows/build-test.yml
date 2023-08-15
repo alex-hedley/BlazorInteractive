@@ -108,3 +108,14 @@ jobs:
         gist_name: blazor_interactive_compilation_tests.md
         gist_badge_label: 'Blazor Interactive Compilation: %Counters_passed%/%Counters_total%'
         gist_token: ${{ secrets.GIST_TOKEN }}
+
+    - name: Unit Tests - BlazorInteractive Dependency Management
+      uses: zyborg/dotnet-tests-report@v1
+      with:
+        project_path: src/BlazorInteractive.DependencyManagement.Tests
+        report_name: BlazorInteractive Dependency Management Tests
+        report_title: BlazorInteractive Dependency Management Tests
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        gist_name: blazor_interactive_dependencymanagement_tests.md
+        gist_badge_label: 'Blazor Interactive Dependency Management: %Counters_passed%/%Counters_total%'
+        gist_token: ${{ secrets.GIST_TOKEN }}
