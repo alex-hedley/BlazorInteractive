@@ -26,6 +26,8 @@
 | BlazorInteractive | BlazorWebAssembly | |
 | BlazorInteractive.Compilation | | |
 | BlazorInteractive.Compilation.Tests | | |
+| BlazorInteractive.DependencyManagement | | |
+| BlazorInteractive.DependencyManagement.Tests | | |
 | BlazorInteractive.Tests | | |
 
 ## Tests

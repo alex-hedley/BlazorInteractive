@@ -1,4 +1,3 @@
-using System.Reflection;
 using OneOf;
 using OneOf.Types;
 
