@@ -21,21 +21,21 @@
 
 ## Solution
 
-| Project | Type |Info |
-|-|-|-|
-| BlazorInteractive | BlazorWebAssembly | |
-| BlazorInteractive.Compilation | | |
-| BlazorInteractive.Compilation.Tests | | |
-| BlazorInteractive.DependencyManagement | | |
-| BlazorInteractive.DependencyManagement.Tests | | |
-| BlazorInteractive.Tests | | |
+| Project                                      | Type              | Info |
+| -------------------------------------------- | ----------------- | ---- |
+| BlazorInteractive                            | BlazorWebAssembly |      |
+| BlazorInteractive.Compilation                |                   |      |
+| BlazorInteractive.Compilation.Tests          |                   |      |
+| BlazorInteractive.DependencyManagement       |                   |      |
+| BlazorInteractive.DependencyManagement.Tests |                   |      |
+| BlazorInteractive.Tests                      |                   |      |
 
 ## Tests
 
 Output using [dotnet-tests-report](https://github.com/marketplace/actions/dotnet-tests-report) ([Code](https://github.com/zyborg/dotnet-tests-report))
 
 - [BlazorInteractive Tests](https://gist.github.com/alex-hedley/0f6142396b2a1bb0231906adcd51bdcd)
-- [BlazorInteractive Compilation Tests]((https://gist.github.com/alex-hedley/1a73c5dd2824cc80bfd2c145308dbcf9))
+- [BlazorInteractive Compilation Tests](https://gist.github.com/alex-hedley/1a73c5dd2824cc80bfd2c145308dbcf9)
 
 ## Docs
 
