@@ -10,7 +10,7 @@ public class BlazorReferenceFilter : IReferenceFilter
     private readonly HttpClient _httpClient;
     private readonly ILogger _logger;
 
-    public BlazorReferenceFilter(HttpClient httpClient, ILogger<BlazorAssemblyAccessor> logger)
+    public BlazorReferenceFilter(HttpClient httpClient, ILogger<BlazorReferenceFilter> logger)
     {
         _httpClient = httpClient;
         _logger = logger;
