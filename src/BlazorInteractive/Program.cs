@@ -6,6 +6,7 @@ using Blazored.Toast;
 using BlazorInteractive;
 using BlazorInteractive.AssemblyCompilation;
 using BlazorInteractive.Compilation;
+using BlazorInteractive.DependencyManagement;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -16,6 +17,7 @@ builder.Services.AddScoped<IReferenceResolver, RemoteFileReferenceResolver>();
 builder.Services.AddScoped<IAssemblyInvoker, AssemblyInvoker>();
 builder.Services.AddScoped<IAssemblyLoader, AssemblyLoader>();
 builder.Services.AddScoped<ICSharpCompiler, CSharpCompiler>();
+builder.Services.AddScoped<IPackageGetter, NuGetPackageGetter>();
 builder.Services.AddBlazoredToast();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });

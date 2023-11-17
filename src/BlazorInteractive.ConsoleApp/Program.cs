@@ -6,7 +6,7 @@ namespace BlazorInteractive.ConsoleApp;
 
 class Program
 {
-    private static readonly ILogger _logger;
+    private static readonly ILogger<NuGetPackageGetter> _logger;
     
     async static Task Main(string[] args)
     {

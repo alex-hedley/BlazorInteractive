@@ -14,7 +14,7 @@ public class NuGetPackageGetter : IPackageGetter
     record IndexResponse(string Version, List<IndexResource> Resources);
     record PackageVersions(List<string> Versions);
     
-    public NuGetPackageGetter(ILogger logger)
+    public NuGetPackageGetter(ILogger<NuGetPackageGetter> logger)
     {
         _logger = logger;
     }
@@ -67,6 +67,7 @@ public class NuGetPackageGetter : IPackageGetter
                 {
                     file.ExtractToFile(target);
                     Console.WriteLine($"Extracted {file.FullName}");
+                    // Console.WriteLine($"{Path.GetFullPath(file.Name)}");
                 }
                 else if (file.Name.EndsWith("nuspec"))
                 {

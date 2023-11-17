@@ -1,0 +1,53 @@
+@inject IPackageGetter NuGetPackageGetter
+@inject IToastService ToastService
+
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+        <img src="https://raw.githubusercontent.com/NuGet/Media/main/Images/MainLogo/Vector/nuget.svg"
+            alt="NuGet logo" height="25px" />
+    </div>
+    <input type="text" class="form-control" placeholder="Search Term" aria-label="Search Term" @bind="SearchTerm" @bind:event="oninput"/>
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" @onclick="GetPackage">Add</button>
+    </div>
+</div>
+
+<div>
+    @if (Data != null)
+    {
+        foreach (var item in Data.Where(i => i is not null))
+        {
+            <label class="form-check-label" for="@($"{item}")">
+                @($"{item}")
+            </label>
+        }
+    }
+</div>
+
+@code {
+    //[Parameter]
+    string? SearchTerm { get; set; }
+
+    [Parameter]
+    public List<string> Data { get; set; } = new List<string>();
+
+    private async void GetPackage()
+    {
+        var package = await NuGetPackageGetter.GetPackage(SearchTerm);
+        package.Switch(
+            success =>
+            {
+                Console.WriteLine("Success");
+                ToastService.ShowSuccess("Added NuGet Package");
+                Data.Add(SearchTerm);
+            },
+            failure =>
+            {
+                Console.WriteLine("Failure");
+                ToastService.ShowError("Failed to add");
+            }
+        );
+        StateHasChanged();
+    }
+
+}

@@ -28,6 +28,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\BlazorInteractive.Compilation\BlazorInteractive.Compilation.csproj" />
+      <ProjectReference Include="..\BlazorInteractive.DependencyManagement\BlazorInteractive.DependencyManagement.csproj" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
