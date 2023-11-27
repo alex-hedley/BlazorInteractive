@@ -42,7 +42,7 @@ dotnet tool install coverlet.console -g -a arm64
 
 Run this from the `src` directory:
 
-`coverlet BlazorInteractive.Compilation.Tests/bin/Debug/net7.0/BlazorInteractive.Compilation.dll --target "dotnet" --targetargs "test --no-build"`
+`coverlet BlazorInteractive.Compilation.Tests/bin/Debug/net8.0/BlazorInteractive.Compilation.dll --target "dotnet" --targetargs "test --no-build"`
 
 ## AltCover
 
