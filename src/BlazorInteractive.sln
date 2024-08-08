@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorInteractive.Dependenc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorInteractive.DependencyManagement.Tests", "BlazorInteractive.DependencyManagement.Tests\BlazorInteractive.DependencyManagement.Tests.csproj", "{D9397485-D136-4BBB-9B47-80D3AE8AAC69}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorInteractive.ConsoleApp", "BlazorInteractive.ConsoleApp\BlazorInteractive.ConsoleApp.csproj", "{5F3F79DB-B425-484E-85F1-5D9F016CF3DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,5 +45,9 @@ Global
 		{D9397485-D136-4BBB-9B47-80D3AE8AAC69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9397485-D136-4BBB-9B47-80D3AE8AAC69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9397485-D136-4BBB-9B47-80D3AE8AAC69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F3F79DB-B425-484E-85F1-5D9F016CF3DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F3F79DB-B425-484E-85F1-5D9F016CF3DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F3F79DB-B425-484E-85F1-5D9F016CF3DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F3F79DB-B425-484E-85F1-5D9F016CF3DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

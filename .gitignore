@@ -360,3 +360,5 @@ MigrationBackup/
 
 **/coveragereport/**/**
 src/**/coverage.json
+
+src/scripts/nuget/**
