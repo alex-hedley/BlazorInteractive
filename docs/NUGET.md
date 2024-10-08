@@ -21,3 +21,13 @@ info :   GET https://api.nuget.org/v3-flatcontainer/mono.unix/7.1.0-final.1.2145
 info :   OK https://api.nuget.org/v3-flatcontainer/dynamiclanguageruntime/1.3.4/dynamiclanguageruntime.1.3.4.nupkg 86ms
 info :   OK https://api.nuget.org/v3-flatcontainer/mono.unix/7.1.0-final.1.21458.1/mono.unix.7.1.0-final.1.21458.1.nupkg 92ms
 ```
+
+## Testing in Blazor WASM project
+
+[Log] https://api.nuget.org/v3-flatcontainer/ironpython/index.json
+[Log] Extracted IronPython.nuspec
+[Log] Extracted lib/net6.0/IronPython.dll
+[Log] Extracted lib/net6.0/IronPython.Modules.dll
+[Log] Extracted lib/net6.0/IronPython.SQLite.dll
+[Log] Extracted lib/net6.0/IronPython.Wpf.dll
+[Log] Success
