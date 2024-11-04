@@ -10,7 +10,7 @@
 
     <ItemGroup>
         <PackageReference Include="BlazorMonaco" Version="3.2.0" />
-        <PackageReference Include="bunit" Version="1.32.7" />
+        <PackageReference Include="bunit" Version="1.34.0" />
         <PackageReference Include="FluentAssertions.BUnit" Version="0.0.67" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
         <PackageReference Include="Moq" Version="4.20.72" />
