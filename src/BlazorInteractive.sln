@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorInteractive", "BlazorInteractive\BlazorInteractive.csproj", "{716A4780-D6B5-4D55-AFDE-B01CE1C0C724}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorInteractive.Tests", "BlazorInteractive.Tests\BlazorInteractive.Tests.csproj", "{1AE8CAFE-46E9-4FE4-93D8-0B9E9928B723}"
@@ -12,6 +14,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorInteractive.DependencyManagement", "BlazorInteractive.DependencyManagement\BlazorInteractive.DependencyManagement.csproj", "{21C38526-0C2F-41FD-BA5B-6194A273F47F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorInteractive.DependencyManagement.Tests", "BlazorInteractive.DependencyManagement.Tests\BlazorInteractive.DependencyManagement.Tests.csproj", "{D9397485-D136-4BBB-9B47-80D3AE8AAC69}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{991FF0D1-C78B-4DCD-BA41-C0508B4DDFC0}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\build-test.yml = ..\.github\workflows\build-test.yml
+		..\.github\workflows\deploy-site.yml = ..\.github\workflows\deploy-site.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,5 +51,8 @@ Global
 		{D9397485-D136-4BBB-9B47-80D3AE8AAC69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9397485-D136-4BBB-9B47-80D3AE8AAC69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9397485-D136-4BBB-9B47-80D3AE8AAC69}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
