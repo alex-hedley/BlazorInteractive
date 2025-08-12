@@ -30,7 +30,7 @@ jobs:
     steps:
     # uses GitHub's checkout action to checkout code form the master branch
     - name: 🛎️ Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     
     - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v4
