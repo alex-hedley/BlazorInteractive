@@ -15,6 +15,20 @@
     <br />
     <div class="row">
         <div class="col col-9">
+            <div class="row mb-2">
+                <div class="col">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="outputMode" id="modeRun" value="run"
+                               checked="@(!_viewIL)" @onchange="@(() => _viewIL = false)" />
+                        <label class="form-check-label" for="modeRun">Run</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="outputMode" id="modeIL" value="il"
+                               checked="@_viewIL" @onchange="@(() => _viewIL = true)" />
+                        <label class="form-check-label" for="modeIL">View IL</label>
+                    </div>
+                </div>
+            </div>
             <OutputComponent Content="@output" OutputClass="@outputClass"></OutputComponent>
         </div>
         <div class="col col-3">
@@ -26,6 +40,7 @@
 @code {
     private string? output = string.Empty;
     private string? outputClass = string.Empty;
+    private bool _viewIL = false;
     private List<string> References = new List<string>();
 
     protected async override Task OnInitializedAsync()
@@ -64,27 +79,49 @@
         var sourceCode = string.Format(sourceCodeFormat, args.SourceCode);
 
         await Task.Run(async () => {
-            var compilationResult = await CodeCompiler.CompileAsync(sourceCode, args.References, args.LanguageVersion, args.CancellationToken);
+            if (_viewIL)
+            {
+                var ilResult = await CodeCompiler.EmitILAsync(sourceCode, args.References, args.LanguageVersion, args.CancellationToken);
 
-            output = compilationResult.Match(
-                assembly => {
-                    outputClass = "success";
-                    var output = AssemblyInvoker.Invoke(assembly, "BlazorInteractive.Program", "Main");
-                    return output;
-                },
-                @void => {
-                    outputClass = "";
-                    return string.Empty;
-                },
-                failure => {
-                    outputClass = "error";
-                    return failure.errorMessage;
-                },
-                cancelled => {
-                    outputClass = "warning";
-                    return string.Empty;
-                }
-            );
+                output = ilResult.Match(
+                    il => {
+                        outputClass = "success";
+                        return il;
+                    },
+                    failure => {
+                        outputClass = "error";
+                        return failure.errorMessage;
+                    },
+                    cancelled => {
+                        outputClass = "warning";
+                        return string.Empty;
+                    }
+                );
+            }
+            else
+            {
+                var compilationResult = await CodeCompiler.CompileAsync(sourceCode, args.References, args.LanguageVersion, args.CancellationToken);
+
+                output = compilationResult.Match(
+                    assembly => {
+                        outputClass = "success";
+                        var output = AssemblyInvoker.Invoke(assembly, "BlazorInteractive.Program", "Main");
+                        return output;
+                    },
+                    @void => {
+                        outputClass = "";
+                        return string.Empty;
+                    },
+                    failure => {
+                        outputClass = "error";
+                        return failure.errorMessage;
+                    },
+                    cancelled => {
+                        outputClass = "warning";
+                        return string.Empty;
+                    }
+                );
+            }
         }, args.CancellationToken);
     }
 }

@@ -13,6 +13,7 @@ public class CodeCompilerTest
     private readonly Mock<IReferenceResolver> _referenceResolver;
     private readonly Mock<ICSharpCompiler> _cSharpCompiler;
     private readonly Mock<IAssemblyLoader> _assemblyLoader;
+    private readonly Mock<IILEmitter> _ilEmitter;
     private readonly CancellationToken _defaultCancellationToken;
     private readonly CodeCompiler _compiler;
     private readonly List<string> _defaultImports;
@@ -34,12 +35,13 @@ public class CodeCompilerTest
         _defaultCancellationToken = CancellationToken.None;
         _cSharpCompiler = new Mock<ICSharpCompiler>();
         _assemblyLoader = new Mock<IAssemblyLoader>();
+        _ilEmitter = new Mock<IILEmitter>();
         _languageVersion = LanguageVersion.Default;
 
         _sourceCode = "Console.WriteLine(\"Hello, World!\");";
 
         _referenceResolver = new Mock<IReferenceResolver>();
-        _compiler = new CodeCompiler(_referenceResolver.Object, _cSharpCompiler.Object, _assemblyLoader.Object);
+        _compiler = new CodeCompiler(_referenceResolver.Object, _cSharpCompiler.Object, _assemblyLoader.Object, _ilEmitter.Object);
     }
 
     [Fact]
@@ -105,6 +107,51 @@ public class CodeCompilerTest
         var result = await _compiler.CompileAsync(sourceCode, _defaultImports, _languageVersion);
 
         result.Value.As<Failure>();
+    }
+
+    [Fact]
+    public async Task EmitILAsync_WithCode_ReturnsILString()
+    {
+        var references = new Mock<IReference>();
+        var roc = new ReferenceCollection(new List<IReference>() { references.Object });
+        _referenceResolver.Setup(r => r.ResolveAsync(_defaultImports, _defaultCancellationToken)).ReturnsAsync(roc);
+
+        var wrapper = new CSharpCompilationWrapper();
+        _cSharpCompiler.Setup(c => c.Compile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ReferenceCollection>(), It.IsAny<LanguageVersion>())).Returns(wrapper);
+
+        var expectedIL = ".class Program { .method Main { } }";
+        _ilEmitter.Setup(e => e.Emit(It.IsAny<ICSharpCompilation>())).Returns(expectedIL);
+
+        var result = await _compiler.EmitILAsync(_sourceCode, _defaultImports, _languageVersion);
+        result.Value.Should().BeOfType<string>();
+        result.Value.As<string>().Should().Be(expectedIL);
+    }
+
+    [Fact]
+    public async Task EmitILAsync_WithoutSourceCode_ReturnsFailure()
+    {
+        var sourceCode = string.Empty;
+        var result = await _compiler.EmitILAsync(sourceCode, _defaultImports, _languageVersion);
+        result.Value.Should().BeOfType<Failure>();
+    }
+
+    [Fact]
+    public async Task EmitILAsync_WithoutImports_ReturnsFailure()
+    {
+        var imports = new List<string>();
+        var result = await _compiler.EmitILAsync(_sourceCode, imports, _languageVersion);
+        result.Value.Should().BeOfType<Failure>();
+    }
+
+    [Fact]
+    public async Task EmitILAsync_WithCancellationToken_ReturnsCancelled()
+    {
+        var cancellationTokenSource = new CancellationTokenSource();
+        var cancellationToken = cancellationTokenSource.Token;
+
+        cancellationTokenSource.Cancel();
+        var result = await _compiler.EmitILAsync(_sourceCode, _defaultImports, _languageVersion, cancellationToken);
+        result.Value.Should().BeOfType<Cancelled>();
     }
 }
 
