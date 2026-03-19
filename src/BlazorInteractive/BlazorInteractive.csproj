@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <PublishTrimmed>false</PublishTrimmed>
+        <WasmEnableWebcil>false</WasmEnableWebcil>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' ">
