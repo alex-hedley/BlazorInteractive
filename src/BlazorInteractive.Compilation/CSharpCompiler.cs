@@ -26,7 +26,7 @@ public class CSharpCompiler : ICSharpCompiler
             .Append(sourceCode)
             .Join(Environment.NewLine);
 
-        var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(languageVersion);
+        var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(languageVersion).WithKind(SourceCodeKind.Script);
         var parsedSyntaxTree = SyntaxFactory.ParseSyntaxTree(sourceCodeWithUsings, parseOptions);
 
         var options = new CSharpCompilationOptions(

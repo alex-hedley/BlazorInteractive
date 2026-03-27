@@ -1,5 +1,5 @@
 @using Microsoft.CodeAnalysis.CSharp;
-
+@inject IJSRuntime JSRuntime
 <div class="row">
     <div class="col">
         <h1>Code Compiler</h1>
@@ -139,7 +139,7 @@
         // private async Task ChangeTheme(ChangeEventArgs e)
         //Console.WriteLine($"setting theme to: {e.Value?.ToString()}");
         //await Global.SetTheme(e.Value?.ToString());
-        await Global.SetTheme(theme);
+        await Global.SetTheme(JSRuntime, theme);
     }
 
     private void SampleChanged(SampleArgs sample)

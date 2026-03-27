@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="BlazorMonaco" Version="3.3.0" />
+        <PackageReference Include="BlazorMonaco" Version="3.4.0" />
         <PackageReference Include="bunit" Version="1.39.5" />
         <PackageReference Include="FluentAssertions.BUnit" Version="0.0.67" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />

@@ -48,43 +48,31 @@
     {
         output = string.Empty;
 
-        const string sourceCodeFormat = @"
-        namespace BlazorInteractive
-        {{
-            public class Program
-            {{
-                public static void Main()
-                {{
-                    {0}
-                }}
-            }}
-        }}
-        ";
-
-        var sourceCode = string.Format(sourceCodeFormat, args.SourceCode);
-
+        // With script compilation, user code is compiled as top-level statements —
+        // no class/namespace wrapper needed.
         await Task.Run(async () => {
-            var compilationResult = await CodeCompiler.CompileAsync(sourceCode, args.References, args.LanguageVersion, args.CancellationToken);
+            var compilationResult = await CodeCompiler.CompileAsync(args.SourceCode, args.References, args.LanguageVersion, args.CancellationToken);
 
-            output = compilationResult.Match(
-                assembly => {
-                    outputClass = "success";
-                    var output = AssemblyInvoker.Invoke(assembly, "BlazorInteractive.Program", "Main");
-                    return output;
-                },
-                @void => {
-                    outputClass = "";
-                    return string.Empty;
-                },
-                failure => {
-                    outputClass = "error";
-                    return failure.errorMessage;
-                },
-                cancelled => {
-                    outputClass = "warning";
-                    return string.Empty;
-                }
-            );
+            if (compilationResult.IsT0)
+            {
+                outputClass = "success";
+                output = await AssemblyInvoker.InvokeAsync(compilationResult.AsT0);
+            }
+            else if (compilationResult.IsT1)
+            {
+                outputClass = "";
+                output = string.Empty;
+            }
+            else if (compilationResult.IsT2)
+            {
+                outputClass = "error";
+                output = compilationResult.AsT2.errorMessage;
+            }
+            else
+            {
+                outputClass = "warning";
+                output = string.Empty;
+            }
         }, args.CancellationToken);
     }
 }
