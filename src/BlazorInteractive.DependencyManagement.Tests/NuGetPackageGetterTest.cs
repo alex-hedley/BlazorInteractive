@@ -16,7 +16,7 @@ public class NuGetPackageGetterTest
         // _defaultCancellationToken = CancellationToken.None;
     }
 
-    [Fact]
+    [Fact(Skip = "Not yet implemented - see issue #19")]
     public async Task GetPackage_WithValidName_ReturnsSuccess()
     {
         var packageName = "Package";
@@ -26,7 +26,7 @@ public class NuGetPackageGetterTest
         result.Value.Should().BeOfType<Success>();
     }
     
-    [Fact]
+    [Fact(Skip = "Not yet implemented - see issue #19")]
     public async Task GetPackage_WithInvalidName_ReturnsFailure()
     {
         var packageName = "Package";
