@@ -18,7 +18,7 @@ jobs:
     
     # uses GitHub's checkout action to checkout code form the master branch
     - name: 🛎️ Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     
     - name: Setup .NET 7.0
       uses: actions/setup-dotnet@v5
