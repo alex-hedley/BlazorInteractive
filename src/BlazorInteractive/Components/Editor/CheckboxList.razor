@@ -22,9 +22,9 @@
                 {
 
                     var text = TextField?.Invoke(item);
-                    var value = ValueField?.Invoke(item).ToString();
-                    var isChecked = SelectedValues.Contains(value!);
-                    var isDisabled = DisabledValues.Contains(value!);
+                    var value = ValueField?.Invoke(item)?.ToString() ?? string.Empty;
+                    var isChecked = SelectedValues.Contains(value);
+                    var isDisabled = DisabledValues.Contains(value);
 
                     if (!string.IsNullOrEmpty(SearchTerm) && !value.ToLower().Contains(SearchTerm.ToLower())) continue;
 
@@ -35,7 +35,7 @@
                             id="@($"{text}Checkbox")"
                             checked=@isChecked
                             disabled=@isDisabled
-                            @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }"
+                            @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value ?? false); }"
                             value="@value"
                             />
                         
@@ -76,25 +76,25 @@
     // How To Create A Checkbox List In Blazor - S.Ravi Kumar - Jul 17, 2020
     // https://www.c-sharpcorner.com/article/how-to-create-a-checkbox-list-in-blazor/
     [Parameter]
-    public IEnumerable<TItem> Data { get; set; }
+    public IEnumerable<TItem> Data { get; set; } = [];
 
     [Parameter]
-    public Func<TItem, string> TextField { get; set; }
+    public Func<TItem, string>? TextField { get; set; }
 
     [Parameter]
-    public Func<TItem, object> ValueField { get; set; }
+    public Func<TItem, object>? ValueField { get; set; }
 
     [Parameter]
-    public string Style { get; set; }
+    public string Style { get; set; } = string.Empty;
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
-    public List<string> SelectedValues { get; set; }
+    public List<string> SelectedValues { get; set; } = [];
 
     [Parameter]
-    public List<string> DisabledValues { get; set; }
+    public List<string> DisabledValues { get; set; } = [];
 
     //[Parameter]
     public string? SearchTerm { get; set; }
@@ -120,6 +120,6 @@
 
     public void SelectAll()
     {
-        SelectedValues = Data.Where(i => i is not null).Select(i => ValueField?.Invoke(i).ToString()).ToList();
+        SelectedValues = Data.Where(i => i is not null).Select(i => ValueField?.Invoke(i)?.ToString() ?? string.Empty).ToList();
     }
 }

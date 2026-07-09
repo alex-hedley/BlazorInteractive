@@ -28,8 +28,7 @@ public class BlazorReferenceFilter : IReferenceFilter
             return new Cancelled();
         }
 
-        // https://stackoverflow.com/a/73944260
-        using var response = await _httpClient.GetAsync($"_framework/blazor.boot.json", cancellationToken);
+        using var response = await _httpClient.GetAsync("_framework/blazor.boot.json", cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -46,10 +45,14 @@ public class BlazorReferenceFilter : IReferenceFilter
 
         _logger.LogInformation("Assemblies total {Count}", (bootstrap.Assemblies() ?? Array.Empty<string>()).Count());
 
-        return bootstrap.Assemblies()?
+        var assemblies = bootstrap.Assemblies()?
             .Where(n => n.StartsWith("System."))
             .Distinct()
             .ToList()
             .AsReadOnly();
+
+        return assemblies is null
+            ? (ReferenceFilterResult)new Failure("No Assemblies found in blazor.boot.json")
+            : assemblies;
     }
 }

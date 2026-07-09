@@ -18,7 +18,7 @@
 
     protected async override Task OnInitializedAsync()
     {
-        _samples = await Http.GetFromJsonAsync<SampleArgs[]>("data/samples.json");
+        _samples = await Http.GetFromJsonAsync<SampleArgs[]>("data/samples.json") ?? Array.Empty<SampleArgs>();
     }
 
     private async Task ChangeSample(ChangeEventArgs e)
