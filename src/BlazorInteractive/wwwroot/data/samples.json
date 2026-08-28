@@ -5,6 +5,11 @@
         "sourceCode": "Console.WriteLine(\"Hello, World!\");"
     },
     {
+        "Name": "dump",
+        "additionalNamespaces": [],
+        "sourceCode": "var person = new { Name = \"Alice\", Age = 30, Scores = new[] { 95, 87, 92 } };\nperson.Dump();"
+    },
+    {
         "Name": "fib",
         "additionalNamespaces": [
             "System.Linq.dll"
