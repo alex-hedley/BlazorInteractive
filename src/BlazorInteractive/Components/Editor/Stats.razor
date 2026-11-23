@@ -1,5 +1,39 @@
-<div class="row">
-    <div class="col">
-        <p>⏱️ Compile Time: ##:##</p>
-    </div>
-</div>
+@if (ExecutionStats is not null)
+{
+    <table class="table table-sm stats-table">
+        <tbody>
+            <tr>
+                <th>Last Run:</th>
+                <td>@ExecutionStats.LastRun?.ToString("h:mm:ss tt")</td>
+            </tr>
+            <tr>
+                <th>Compile:</th>
+                <td>@ExecutionStats.CompileTime.TotalSeconds.ToString("F3")s</td>
+            </tr>
+            <tr>
+                <th>Execute:</th>
+                <td>@ExecutionStats.ExecuteTime.TotalSeconds.ToString("F3")s</td>
+            </tr>
+            <tr>
+                <th>Memory:</th>
+                <td>@FormatBytes(ExecutionStats.Memory)</td>
+            </tr>
+            <tr>
+                <th>CPU:</th>
+                <td>@ExecutionStats.CpuTime.TotalSeconds.ToString("F3")s</td>
+            </tr>
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public ExecutionStats? ExecutionStats { get; set; }
+
+    private static string FormatBytes(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes}b";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1}KB";
+        return $"{bytes / (1024.0 * 1024):F1}MB";
+    }
+}

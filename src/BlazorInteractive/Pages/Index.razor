@@ -18,7 +18,7 @@
             <OutputComponent Content="@output" OutputClass="@outputClass"></OutputComponent>
         </div>
         <div class="col col-3">
-            @* <Stats /> *@
+            <Stats ExecutionStats="@_stats" />
         </div>
     </div>
 </div>
@@ -27,6 +27,7 @@
     private string? output = string.Empty;
     private string? outputClass = string.Empty;
     private List<string> References = new List<string>();
+    private ExecutionStats? _stats;
 
     protected async override Task OnInitializedAsync()
     {
@@ -63,13 +64,28 @@
 
         var sourceCode = string.Format(sourceCodeFormat, args.SourceCode);
 
+        var runTime = DateTime.Now;
         await Task.Run(async () => {
+            var stats = new ExecutionStats { LastRun = runTime };
+
+            var compileWatch = System.Diagnostics.Stopwatch.StartNew();
             var compilationResult = await CodeCompiler.CompileAsync(sourceCode, args.References, args.LanguageVersion, args.CancellationToken);
+            compileWatch.Stop();
+            stats.CompileTime = compileWatch.Elapsed;
 
             output = compilationResult.Match(
                 assembly => {
                     outputClass = "success";
+
+                    var memBefore = GC.GetTotalMemory(false);
+                    var executeWatch = System.Diagnostics.Stopwatch.StartNew();
+                    var cpuBefore = GetCpuTime();
                     var output = AssemblyInvoker.Invoke(assembly, "BlazorInteractive.Program", "Main");
+                    executeWatch.Stop();
+                    stats.ExecuteTime = executeWatch.Elapsed;
+                    stats.Memory = GC.GetTotalMemory(false) - memBefore;
+                    stats.CpuTime = GetCpuTime() - cpuBefore;
+
                     return output;
                 },
                 @void => {
@@ -85,6 +101,20 @@
                     return string.Empty;
                 }
             );
+
+            _stats = stats;
         }, args.CancellationToken);
+    }
+
+    private static TimeSpan GetCpuTime()
+    {
+        try
+        {
+            return System.Diagnostics.Process.GetCurrentProcess().TotalProcessorTime;
+        }
+        catch
+        {
+            return TimeSpan.Zero;
+        }
     }
 }
