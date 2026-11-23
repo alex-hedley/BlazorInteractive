@@ -47,7 +47,7 @@ public class BlazorReferenceFilter : IReferenceFilter
         _logger.LogInformation("Assemblies total {Count}", (bootstrap.Assemblies() ?? Array.Empty<string>()).Count());
 
         return bootstrap.Assemblies()?
-            .Where(n => n.StartsWith("System."))
+            .Where(n => n.StartsWith("System.") || n == "Dumpify.dll")
             .Distinct()
             .ToList()
             .AsReadOnly();

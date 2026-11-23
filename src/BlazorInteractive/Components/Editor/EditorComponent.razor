@@ -65,7 +65,7 @@
     [Parameter]
     public LanguageVersion CompilerVersion { get; set; }
 
-    private readonly List<string> Required = new() { "System.dll", "System.Console.dll", "System.Private.CoreLib.dll", "System.Runtime.dll" }; 
+    private readonly List<string> Required = new() { "System.dll", "System.Console.dll", "System.Private.CoreLib.dll", "System.Runtime.dll", "Dumpify.dll" }; 
     private List<string> SelectedIds = new();
     private List<string> DisabledIds = new();
     private StandaloneCodeEditor _editor = null!;
