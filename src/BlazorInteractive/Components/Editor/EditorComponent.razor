@@ -1,4 +1,6 @@
-@using Microsoft.CodeAnalysis.CSharp;
+@using Microsoft.CodeAnalysis.CSharp
+@using System.Collections.Immutable
+@using BlazorInteractive.Components.Packages
 
 <div class="row">
     <div class="col">
@@ -26,7 +28,7 @@
 </div>
 <br />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <CheckboxList Data="@(SortedReferencesWithoutExtension())"
                       TextField="@((item) => item.referenceNoExt)"
                       ValueField="@((item) => item.reference)"
@@ -34,8 +36,10 @@
                       DisabledValues="@DisabledIds"
                       Style="@Style"
                       />
+        <hr />
+        <PackageComponent OnPackagesChanged="OnPackagesChanged" />
     </div>
-    <div class="col-md-8">
+    <div class="col-md-9">
         <StandaloneCodeEditor
             Id="editor"
             ConstructionOptions="EditorConstructionOptions"
@@ -68,6 +72,7 @@
     private readonly List<string> Required = new() { "System.dll", "System.Console.dll", "System.Private.CoreLib.dll", "System.Runtime.dll" }; 
     private List<string> SelectedIds = new();
     private List<string> DisabledIds = new();
+    private List<ImmutableArray<byte>> PackageAssemblies = new();
     private StandaloneCodeEditor _editor = null!;
     private CancellationTokenSource? _cts;
     private bool CanCancel = false;
@@ -113,7 +118,8 @@
             SourceCode = value,
             CancellationToken = _cts.Token,
             References = SelectedIds,
-            LanguageVersion = CompilerVersion
+            LanguageVersion = CompilerVersion,
+            PackageAssemblies = new List<ImmutableArray<byte>>(PackageAssemblies)
         };
         try
         {
@@ -151,5 +157,10 @@
     private void CompilerChanged(CompilerVersionArgs compiler)
     {
         CompilerVersion = compiler.LanguageVersion;
+    }
+
+    private void OnPackagesChanged(List<ImmutableArray<byte>> assemblies)
+    {
+        PackageAssemblies = assemblies;
     }
 }

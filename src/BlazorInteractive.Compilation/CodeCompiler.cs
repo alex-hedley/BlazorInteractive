@@ -1,4 +1,6 @@
+using System.Collections.Immutable;
 using BlazorInteractive.Compilation.Results;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace BlazorInteractive.Compilation;
@@ -16,7 +18,7 @@ public class CodeCompiler : ICompiler
         _assemblyLoader = assemblyLoader;
     }
 
-    public async Task<CompilationResult> CompileAsync(string sourceCode, ICollection<string>? imports, LanguageVersion languageVersion, CancellationToken cancellationToken = default)
+    public async Task<CompilationResult> CompileAsync(string sourceCode, ICollection<string>? imports, LanguageVersion languageVersion, CancellationToken cancellationToken = default, IEnumerable<ImmutableArray<byte>>? additionalReferences = null)
     {
         if (string.IsNullOrEmpty(sourceCode))
         {
@@ -39,9 +41,10 @@ public class CodeCompiler : ICompiler
             return references.Match(
                 refs =>
                 {
+                    var mergedRefs = MergeAdditionalReferences(refs, additionalReferences);
                     var assemblyName = Path.GetRandomFileName();
 
-                    var compiler = _cSharpCompiler.Compile(sourceCode, assemblyName, refs, languageVersion);
+                    var compiler = _cSharpCompiler.Compile(sourceCode, assemblyName, mergedRefs, languageVersion);
                     return compiler.Match(
                         compilation =>
                         {
@@ -61,5 +64,23 @@ public class CodeCompiler : ICompiler
         {
             return new Failure(ex, ex.Message);
         }
+    }
+
+    private static ReferenceCollection MergeAdditionalReferences(ReferenceCollection existing, IEnumerable<ImmutableArray<byte>>? additionalReferences)
+    {
+        if (additionalReferences is null)
+        {
+            return existing;
+        }
+
+        var extra = additionalReferences
+            .Select(bytes => (IReference)new Reference(
+                Array.Empty<string?>(),
+                MetadataReference.CreateFromImage(bytes)))
+            .ToList();
+
+        return extra.Count == 0
+            ? existing
+            : new ReferenceCollection(existing.Concat(extra));
     }
 }

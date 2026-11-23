@@ -28,4 +28,6 @@ builder.Services.AddHttpClient<IReferenceFilter, BlazorReferenceFilter>(client =
     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
 });
 
+builder.Services.AddHttpClient<INuGetPackageService, NuGetPackageService>();
+
 await builder.Build().RunAsync();
