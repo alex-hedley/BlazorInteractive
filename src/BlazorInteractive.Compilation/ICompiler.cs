@@ -6,4 +6,5 @@ namespace BlazorInteractive.Compilation;
 public interface ICompiler
 {
     Task<Results.CompilationResult> CompileAsync(string sourceCode, ICollection<string>? imports, LanguageVersion languageVersion, CancellationToken cancellationToken = default);
+    Task<Results.ILEmitResult> EmitILAsync(string sourceCode, ICollection<string>? imports, LanguageVersion languageVersion, CancellationToken cancellationToken = default);
 }
